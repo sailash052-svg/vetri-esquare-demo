@@ -260,6 +260,8 @@ a.logo span{color:#0b0b0d}
 .hall{display:flex;flex-direction:column}
 .hall p{flex:1 1 auto}
 .hall .mini{margin-top:6px;align-self:flex-start}
+.vwrap iframe.max{position:fixed;inset:0;width:100%;height:100%;min-height:0;z-index:1000;background:#000}
+body.noscroll{overflow:hidden}
 </style><script src="qrcode.js"></script></head><body>
 <div class="demo">DEMO PREVIEW: showtimes and prices are placeholders. Payment is simulated, no real money.</div>
 <nav><a class="logo" href="#/" aria-label="Vetri E-Square"><span>VETRI</span><span>E</span><span>SQUARE</span></a>
@@ -614,6 +616,7 @@ function view(hall,seat){
 }
 window.addEventListener('message',function(e){
   if(e.origin!==location.origin||!e.data)return;
+  if(e.data.type==='seat-view:expand'){var fr=document.getElementById('fr');if(fr)fr.classList.toggle('max',!!e.data.on);document.body.classList.toggle('noscroll',!!e.data.on);return;}
   if(e.data.type==='seat-view:seat'&&e.data.hall==='epiq1')viewSeat=e.data.seat;
   if(e.data.type==='seat-view:book'){
     if(e.data.hall==='epiq1'){var id=e.data.seat;if(!booked(id)&&st.sel.indexOf(id)<0&&st.sel.length<MAXSEL)st.sel.push(id);}

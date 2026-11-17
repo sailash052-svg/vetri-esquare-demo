@@ -45,6 +45,7 @@ button{font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
 #info b{color:#F4EDE0;font-size:17px}
 .cta{background:#E53935;color:#fff;border:0;border-radius:999px;min-height:48px;padding:0 22px;font-size:16px;white-space:nowrap}
 .cta:active{background:#b72b28}
+#fsBtn{font-style:normal;display:inline-flex;align-items:center;justify-content:center}#fsBtn svg{width:22px;height:22px;stroke:#F4EDE0;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:480px){.brand{font-size:19px}.seg button{padding:0 12px}}
 </style>
 </head>
@@ -60,7 +61,7 @@ button{font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
 </div>
 <div id="stage" data-mode="seat">
 <div class="ov tl seg" role="group" aria-label="View mode"><button id="m_seat" class="on">Seat</button><button id="m_hall">Hall</button></div>
-<div class="ov tr"><span class="badge" id="badge">-</span><button class="round" id="infoBtn" aria-label="About this view">i</button></div>
+<div class="ov tr"><span class="badge" id="badge">-</span><button class="round" id="infoBtn" aria-label="About this view">i</button><button class="round" id="fsBtn" aria-label="Full screen" title="Full screen"></button></div>
 <div class="ov" id="notebox"></div>
 <div class="ov" id="hint"><span id="hintT"></span></div>
 <button class="ov pill" id="face">Face the screen</button>
@@ -539,6 +540,29 @@ resize();
   });
 })();
 (function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
+
+// ---- maximise / minimise (full screen where the browser allows it, otherwise the view just fills the page) ----
+(function(){
+  var btn=document.getElementById('fsBtn'),embedded=/[?&]embed=1/.test(location.search)&&window.parent!==window,maxed=false;
+  var ICON_MAX='<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICON_MIN='<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  var de=document.documentElement,canFS=!!(de.requestFullscreen||de.webkitRequestFullscreen);
+  if(!embedded&&!canFS){btn.style.display='none';return;}   // nothing to enlarge
+  btn.innerHTML=ICON_MAX;
+  function paint(){btn.innerHTML=maxed?ICON_MIN:ICON_MAX;btn.setAttribute('aria-label',maxed?'Exit full screen':'Full screen');btn.title=maxed?'Exit full screen':'Full screen';}
+  function setMax(on){
+    if(maxed===on)return;maxed=on;paint();
+    if(embedded){try{window.parent.postMessage({type:'seat-view:expand',on:on},location.origin);}catch(e){}}
+    setTimeout(function(){window.dispatchEvent(new Event('resize'));},80);
+  }
+  function enterFS(){var rq=de.requestFullscreen||de.webkitRequestFullscreen;if(!rq)return;try{var p=rq.call(de);if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  function exitFS(){if(!(document.fullscreenElement||document.webkitFullscreenElement))return;var ex=document.exitFullscreen||document.webkitExitFullscreen;try{var p=ex.call(document);if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  btn.addEventListener('click',function(e){e.stopPropagation();if(!maxed){setMax(true);enterFS();}else{setMax(false);exitFS();}});
+  btn.addEventListener('pointerdown',function(e){e.stopPropagation();});
+  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&maxed&&!embedded)setMax(false);else if(!document.fullscreenElement&&maxed)setMax(false);});
+  document.addEventListener('webkitfullscreenchange',function(){if(!document.webkitFullscreenElement&&maxed)setMax(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&maxed){setMax(false);exitFS();}});
+})();
 })();
 </script>
 </body>
