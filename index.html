@@ -231,10 +231,21 @@ footer{font-size:13px}
 #nx{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .show .t{white-space:nowrap;font-size:28px}
 .show .si{overflow-wrap:anywhere}
+
+.intro{position:relative;isolation:isolate;color:#fff;padding:84px 5vw 96px}
+.intro .ibg{position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;background:radial-gradient(90% 120% at 85% 0%,rgba(255,90,78,.55),rgba(255,90,78,0) 60%),linear-gradient(135deg,#17100f,#2b1311 60%,#3a1612)}
+.intro .il{max-width:640px}
+.intro h1{font-size:clamp(44px,8vw,84px);font-weight:700;letter-spacing:-2px;line-height:1;margin:10px 0 16px}
+.intro .eb{color:rgba(255,255,255,.75)}
+.intro .lead{font-size:clamp(17px,2.2vw,21px);line-height:1.5;color:rgba(255,255,255,.85);margin:0 0 28px}
+.intro .b2{border-color:#fff;color:#fff}.intro .b2:hover{background:rgba(255,255,255,.15)}
+.about{max-width:680px;font-size:17px;line-height:1.65;margin:0 0 22px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.facts>div{border:1px solid var(--line);border-radius:8px;padding:16px}.facts b{display:block;font-size:17px;margin-bottom:4px}.facts span{color:var(--muted);font-size:14px}
 </style><script src="qrcode.js"></script></head><body>
 <div class="demo">DEMO PREVIEW: showtimes and prices are placeholders. Payment is simulated, no real money.</div>
 <nav><a class="logo" href="#/">VETRI <span>E-SQUARE</span></a>
-<div class="links"><a href="#/now">Now showing</a><a href="#/screens">Screens</a><a href="#/visit">Visit us</a><a href="#/admin" style="color:#717171">Admin</a><a class="cta" href="#/book">Book tickets</a></div></nav>
+<div class="links"><a href="#/movies">Now showing</a><a href="#/screens">Screens</a><a href="#/snacks">Snacks</a><a href="#/visit">Visit us</a><a href="#/admin" style="color:#717171">Admin</a><a class="cta" href="#/movies">Book tickets</a></div></nav>
 <div class="page" id="app"></div>
 <footer><div>Vetri E-Square, Vallam Quarry Road, Thanjavur. Website preview.</div><div>Demo payments only. No real money is charged.</div></footer>
 <script>
@@ -300,9 +311,9 @@ function soonDetail(k){
   var x=upcoming()[k];if(!x){go('#/');return;}
   var f=SOON_INFO[x.t]||{},slug=String(x.t).toLowerCase().replace(/[^a-z0-9]+/g,'-'),url='posters/'+slug+'.jpg';
   function row(a,b){return b?'<div class="dr"><span>'+a+'</span><b>'+esc(b)+'</b></div>':'';}
-  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><div class="eb" style="margin-top:14px">Coming soon</div><h1 style="margin-top:6px">'+esc(x.t)+'</h1>';
+  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/movies" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><div class="eb" style="margin-top:14px">Coming soon</div><h1 style="margin-top:6px">'+esc(x.t)+'</h1>';
   h+='<div class="drs" style="margin-top:14px">'+row('Release date',x.d)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
-  h+='<div class="muted" style="margin:22px 0;font-size:14px">Booking opens closer to the release date.</div><a class="b1" href="#/">See what is showing now</a></div>';
+  h+='<div class="muted" style="margin:22px 0;font-size:14px">Booking opens closer to the release date.</div><a class="b1" href="#/movies">See what is showing now</a></div>';
   h+='<div class="poster"><div id="hPT" style="display:block;position:absolute;left:20px;bottom:18px;font-weight:700;font-size:24px;color:#555">'+esc(x.t)+'</div><img alt="'+esc(x.t)+' poster" src="'+url+'" style="position:relative;display:block;width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div></div>';
   app.innerHTML=h;
 }
@@ -353,7 +364,7 @@ function movieDetail(i,d){
   d=Math.min(DAYS,Math.max(0,+d||0));
   var f=INFO[m.t]||{},url='posters/'+m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg';
   function row(k,v){return v?'<div class="dr"><span>'+k+'</span><b>'+v+'</b></div>':'';}
-  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><h1 style="margin-top:14px">'+m.t+'</h1><div class="muted" style="margin-bottom:18px">'+m.m+' &middot; '+m.s+'</div>';
+  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/movies" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><h1 style="margin-top:14px">'+m.t+'</h1><div class="muted" style="margin-bottom:18px">'+m.m+' &middot; '+m.s+'</div>';
   h+='<div class="drs">'+row('Release date',f.rel)+row('Runtime',f.run)+row('Certificate',f.cert)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
   if(!m.times.length){
     h+='<div class="muted" style="margin:22px 0">No shows are scheduled for this movie right now.</div></div>';
@@ -394,12 +405,21 @@ var app=document.getElementById('app');
 function $(id){return document.getElementById(id);}
 function go(h){location.hash=h;}
 
-function home(){
+function moviesPage(){
   var h='<div class="hero" id="hero"><div class="hbg" id="hBg"></div><div class="l"><div class="eb">Now showing</div><h1 id="hT"></h1><div class="muted" style="margin-bottom:6px" id="hM"></div><div class="muted" style="margin-bottom:24px;font-size:14px" id="hX"></div><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" id="hB" href="#/book">Book seats</a><a class="b2" href="#/view">See the view from your seat</a></div><div class="dots" id="hD"></div></div>';
   h+='<div class="poster" id="hP"><div id="hPT" style="position:absolute;left:20px;bottom:18px;font-weight:700;font-size:28px;color:#555;line-height:1.1"></div><img id="hPI" alt="" style="display:block;width:100%;height:100%;object-fit:cover"><button class="arw" id="hPrev" aria-label="Previous movie" style="left:8px">&#8249;</button><button class="arw" id="hNext" aria-label="Next movie" style="right:8px">&#8250;</button></div></div>';
   h+='<div class="sec" id="s-now"><h2>Next shows</h2><p class="muted note">Tickets per seat: '+priceNote()+' (demo prices).</p><div class="grid" id="nx">'+nextShows()+'</div></div><div class="sec"><h2>Now showing</h2><div class="grid" style="gap:22px">';
   MOVIES.forEach(function(m,i){if(!m.times.length)return;h+='<a class="mv" href="#/movie/'+i+'"><div class="a">'+m.t+'<img src="posters/'+m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg" alt="'+m.t+' poster" style="display:block;width:100%;height:100%;object-fit:cover;object-position:'+(m.pos||'50% 50%')+'" onerror="this.remove()"></div><div style="font-weight:700;margin-top:10px">'+m.t+'</div><div class="muted" style="font-size:13px">'+m.m+'</div></a>';});
-  h+='</div></div>'+soonHTML()+'<div class="sec" id="s-screens"><h2>Our screens</h2><div class="grid" style="gap:22px">';
+  h+='</div></div>'+soonHTML();
+  app.innerHTML=h;
+  heroInit();
+  if(nxTimer)clearInterval(nxTimer);
+  nxTimer=setInterval(function(){var g=$('nx');if(!g){clearInterval(nxTimer);return;}g.innerHTML=nextShows();},30000);
+}
+function home(){
+  var h='<div class="intro"><div class="ibg"></div><div class="il"><div class="eb">Thanjavur</div><h1>Vetri E-Square</h1><p class="lead">A cinema on Vallam Quarry Road with three screens, recliner seats, and snacks brought to your seat.</p><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" href="#/movies">Book tickets</a><a class="b2" href="#/screens">See our screens</a></div></div></div>';
+  h+='<div class="sec" id="s-about"><h2>Welcome</h2><p class="about">Vetri E-Square is a cinema on Vallam Quarry Road, Thanjavur. We have three screens, called EPIQ 1, EPIQ 2 and COSMIQ. You can pick your own seat online, and look at the view from that seat before you book.</p><div class="facts"><div><b>3 screens</b><span>EPIQ 1, EPIQ 2 and COSMIQ</span></div><div><b>Recliner seats</b><span>In EPIQ 1 and EPIQ 2</span></div><div><b>Pick your seat</b><span>Up to 10 seats in one booking</span></div><div><b>Snacks to your seat</b><span>Tell us your screen and seat</span></div></div></div>';
+  h+='<div class="sec" id="s-screens"><h2>Our screens</h2><div class="grid" style="gap:22px">';
   [['EPIQ 1','#FF5A4E','65 × 34 ft screen. 312 recliner seats in curved, stepped rows with a walkway between rows J and I.','epiq1'],['EPIQ 2','#B8730A','61 × 32 ft screen. Same recliner comfort as EPIQ 1. Seat layout to be confirmed.','epiq2'],['COSMIQ','#1F8A5B','A more intimate hall with 339 seats and a small VIP box at the back. Screen size to be confirmed.','cosmiq']].forEach(function(x){
     h+='<div class="hall"><h3>'+x[0]+'</h3><p>'+x[2]+'</p><a class="mini" href="#/view/'+x[3]+'">Look around in 3D</a></div>';});
   h+='</div></div><div class="sec" id="s-snacks"><h2>Snacks</h2><p class="muted note">Order from your seat. Tell us your screen and seat, and our staff will bring it to you. Sample menu and prices for this demo.</p><div class="snk"><div class="menu" id="snkMenu">';
@@ -409,11 +429,9 @@ function home(){
   SNACKS.forEach(function(g,k){h+='<div class="pnl" data-pnl="'+k+'"'+(k===0?'':' hidden')+'>';g.items.forEach(function(x){h+='<div class="it"><span>'+x.n+'</span><b>'+inr(x.p)+'</b><div class="stp"><button type="button" data-id="'+x.id+'" data-d="-1" aria-label="Remove one '+x.n+'">&minus;</button><span id="q-'+x.id+'">0</span><button type="button" data-id="'+x.id+'" data-d="1" aria-label="Add one '+x.n+'">+</button></div></div>';});h+='</div>';});
   h+='</div><div class="how" id="snkOrder"><div class="k">Your order</div><div id="snkLines" class="muted" style="font-size:14px">Nothing added yet.</div><div class="line" style="font-weight:700;border-top:1px solid #EBEBEB;margin-top:8px"><span>Total</span><span id="snkTot">&#8377;0</span></div><div class="fl2"><label for="snkScr">Screen</label><select id="snkScr"><option value="">Choose screen</option><option>EPIQ 1</option><option>EPIQ 2</option><option>COSMIQ</option></select></div><div class="fl2"><label for="snkSeat">Seat</label><input id="snkSeat" placeholder="For example H8" maxlength="3" autocomplete="off"></div><button type="button" class="btn" id="snkGo" style="margin-top:12px">Place snack order</button><div id="snkMsg" style="font-size:14px;margin-top:10px"></div><p class="muted" style="font-size:13px;margin:10px 0 0">Demo only: no real order is sent and no money is charged. In the real site, staff would see the order on their screen.</p></div></div></div><div class="sec" id="s-visit"><h2>Visit us</h2><div class="vis"><div><div class="k">Address</div>Vetri E-Square<br>Vallam Quarry Road<br>Thanjavur</div><div><div class="k">Box office</div>Open daily, 8:00 AM to 10:00 PM<br><a href="tel:+919003490822">9003490822</a><br><a href="mailto:sailash052@gmail.com">sailash052@gmail.com</a></div></div></div>';
   app.innerHTML=h;
-  heroInit();
   snkInit();
-  if(nxTimer)clearInterval(nxTimer);
-  nxTimer=setInterval(function(){var g=$('nx');if(!g){clearInterval(nxTimer);return;}g.innerHTML=nextShows();},30000);
 }
+
 var SNACKS=[{c:'Popcorn',items:[['Salted, regular',120],['Salted, large',190],['Caramel, regular',140],['Caramel, large',210],['Cheese, regular',150]]},{c:'Drinks',items:[['Cold drink, regular',80],['Cold drink, large',110],['Cold coffee',90],['Fresh lime soda',70],['Water bottle',30]]},{c:'Bites',items:[['Samosa (2 pcs)',40],['Veg puff',35],['French fries',100],['Nachos with cheese',130]]},{c:'Combos',items:[['Large popcorn and cold drink',250],['2 regular popcorn and 2 cold drinks',420]]}];
 var SN_ALL=[],sq={};
 SNACKS.forEach(function(g){g.items=g.items.map(function(x,i){var o={n:x[0],p:x[1],id:'s'+SN_ALL.length};SN_ALL.push(o);return o;});});
@@ -653,9 +671,10 @@ function route(){
   var p=(location.hash||'#/').replace(/^#\/?/,'').split('/');
   var r=p[0]||'home';
   if(r==='book'){if(p[1]!==undefined&&p[1]!==''){st.movie=+p[1]||0;if(!MOVIES[st.movie])st.movie=0;st.date=Math.min(DAYS,Math.max(0,+p[3]||0));if(p[2]!==undefined&&p[2]!==''){st.t=+p[2];}if(MOVIES[st.movie].times.indexOf(st.t)<0||isPast(st.date,st.t))st.t=firstOpen(MOVIES[st.movie],st.date);st.sel=[];}}
-  if(r==='now'||r==='screens'||r==='visit'){if(!$('s-now')||document.querySelector('.hero')===null)home();var id={now:'s-now',screens:'s-screens',visit:'s-visit'}[r];var el=$(id);if(el)el.scrollIntoView();try{history.replaceState(null,'',location.pathname+location.search+'#/');}catch(e){}return;}
+  if(r==='now'){moviesPage();window.scrollTo(0,0);return;}
+  if(r==='screens'||r==='visit'||r==='snacks'){if(!$('s-screens'))home();var id={screens:'s-screens',visit:'s-visit',snacks:'s-snacks'}[r];var el=$(id);if(el)el.scrollIntoView();try{history.replaceState(null,'',location.pathname+location.search+'#/');}catch(e){}return;}
   window.scrollTo(0,0);
-  ({home:home,movie:function(){movieDetail(+p[1],p[2]);},t:function(){ticketView(p[1]);},soon:function(){soonDetail(+p[1]);},book:seats,view:function(){view(p[1],p[2]);},pay:pay,ticket:ticket,failed:failed,admin:function(){if(staffIn())admin();else adminLogin();}}[r]||home)();
+  ({home:home,movies:moviesPage,movie:function(){movieDetail(+p[1],p[2]);},t:function(){ticketView(p[1]);},soon:function(){soonDetail(+p[1]);},book:seats,view:function(){view(p[1],p[2]);},pay:pay,ticket:ticket,failed:failed,admin:function(){if(staffIn())admin();else adminLogin();}}[r]||home)();
 }
 try{history.scrollRestoration='manual';}catch(e){}
 window.addEventListener('hashchange',route);route();
