@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vetri E-Square, Thanjavur (demo website)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:#FFFFFF;color:#222222;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+body{min-height:100vh;display:flex;flex-direction:column}
+a{color:#FF5A4E}
+button{font-family:inherit;cursor:pointer}
+.demo{background:#FF5A4E;color:#FFFFFF;text-align:center;padding:7px 12px;font-size:13px;font-weight:700}
+.D{font-family:'Plus Jakarta Sans',sans-serif}
+nav{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:14px 5vw;max-width:1280px;width:100%;margin:0 auto}
+.logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:28px;color:#222222;text-decoration:none;letter-spacing:1px}.logo span{color:#FF5A4E}
+.links{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;font-size:15px;font-weight:500}
+.links a{color:#222222;text-decoration:none;min-height:40px;display:inline-flex;align-items:center}
+.cta{background:#FF5A4E;color:#FFFFFF!important;padding:0 20px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;letter-spacing:1px}
+.page{max-width:1280px;width:100%;margin:0 auto;flex:1}
+.sec{padding:44px 5vw 20px}
+h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:38px;margin:0 0 18px}
+.hero{display:flex;flex-wrap:wrap;gap:36px;padding:30px 5vw 56px;align-items:center}
+.hero .l{flex:1 1 420px;min-width:0}
+.eb{color:#D0362B;font-weight:700;letter-spacing:3px;font-size:13px}
+.hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:clamp(56px,9vw,96px);line-height:.9;margin:12px 0 14px}
+.hero h1 span{color:#FF5A4E}
+.muted{color:#717171}
+.b1{background:#FF5A4E;color:#FFFFFF;padding:14px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;letter-spacing:1px;text-decoration:none;display:inline-block;border:0}
+.b2{border:2px solid #D0362B;color:#D0362B;padding:12px 26px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;letter-spacing:1px;text-decoration:none;display:inline-block;background:transparent}
+.poster{flex:0 1 380px;min-width:240px;height:460px;position:relative;overflow:hidden;background:linear-gradient(180deg,#2B0F3A 0%,#8B1E5C 45%,#FF8A3D 78%,#FF5A4E 100%);box-shadow:12px 12px 0 #FF5A4E}
+.arw{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;background:rgba(12,8,16,.65);color:#222222;font-size:26px;line-height:1;cursor:pointer;z-index:2}
+.arw:hover{background:#FF5A4E}
+.dots{display:flex;gap:10px;margin-top:26px}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid #FF5A4E;background:transparent;padding:0;cursor:pointer}
+.dot.on{background:#FF5A4E}
+.band{background:#FF5A4E;color:#FFFFFF;transform:skewY(-1.2deg);padding:12px 5vw;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;letter-spacing:3px;white-space:nowrap;overflow:hidden}
+.grid{display:flex;flex-wrap:wrap;gap:16px}
+.show{flex:1 1 160px;min-width:140px;background:#F7F7F7;border:1px solid #EBEBEB;padding:16px;text-decoration:none;color:#222222;border-radius:4px;display:block}
+.show:hover{border-color:#FF5A4E}
+.show .t{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:32px;color:#FF5A4E;line-height:1}
+.mv{flex:1 1 200px;min-width:170px;text-decoration:none;color:#222222;display:block}
+.mv .a{position:relative;overflow:hidden;height:260px;padding:14px;display:flex;align-items:flex-end;font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:30px;line-height:.95;text-shadow:3px 3px 0 #FFFFFF}
+.hall{flex:1 1 300px;min-width:0;background:#F7F7F7;padding:24px;border-left:6px solid}
+.hall h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:46px;margin:0;line-height:1}
+.hall p{color:#717171;line-height:1.55;margin:10px 0}
+.mini{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:2px solid #D0362B;color:#D0362B;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;letter-spacing:1px;margin-top:6px}
+.vis{display:flex;flex-wrap:wrap;gap:24px}.vis>div{flex:1 1 260px;line-height:1.6}.vis .k{color:#D0362B;font-weight:700;font-size:13px;letter-spacing:2px}
+footer{border-top:1px solid #EBEBEB;padding:22px 5vw;color:#717171;font-size:13px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;margin-top:30px}
+/* booking */
+.bk{max-width:1000px;margin:0 auto;padding:0 16px 24px}
+.bk h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:34px;margin:6px 0 0;line-height:1}
+.sub{color:#717171;font-size:13px;margin:4px 0 12px}
+.chips{display:flex;gap:8px;align-items:center;overflow-x:auto;padding-bottom:4px}
+.chip{flex:none;min-height:44px;padding:4px 14px;border-radius:8px;text-align:center;background:transparent;color:#222222;border:1.5px solid #717171}
+.chip.on{background:#222222;color:#FFFFFF;border-color:#222222}.chip b{display:block;font-size:14px}.chip small{font-size:10px;opacity:.8}
+.title{text-align:center;font-weight:700;font-size:14px;margin:16px 0 4px}
+.hintx{font-size:11px;color:#717171;text-align:center;margin-bottom:10px}
+.map{overflow-x:auto;padding:0 0 10px}.inner{width:max-content;min-width:100%}
+.row{display:flex;gap:4px;align-items:center;margin-bottom:7px;justify-content:center}
+.rl{position:sticky;left:0;z-index:1;width:20px;height:26px;line-height:26px;flex:none;background:#FFFFFF;font-size:12px;color:#717171;text-align:center}
+.s{width:24px;height:26px;flex:none;padding:0;border-radius:5px;font-size:9px;font-weight:700;border:1.5px solid #DDDDDD;background:transparent;color:#222222}
+.s:hover:not(.t){background:#2a2032}
+.s.b{border-color:#F4A62A;background:#FFF5DF}
+.s.t{border-color:#EBEBEB;background:#EBEBEB;color:#717171;cursor:not-allowed;font-size:12px;font-weight:400}
+.s.sd{border-color:#FF5A4E;box-shadow:0 0 8px #FF5A4E;animation:pl 1s infinite alternate}@keyframes pl{to{background:rgba(255,194,26,.35)}}
+.s.on{border-color:#FF5A4E;background:#FF5A4E;color:#FFFFFF}
+.scr{width:520px;height:44px;margin:26px auto 0;border-top:5px solid #D0362B;border-radius:50% 50% 0 0/100% 100% 0 0;background:linear-gradient(180deg,rgba(25,211,197,.35),rgba(255,45,111,0));box-shadow:0 -12px 30px rgba(25,211,197,.3)}
+.st{text-align:center;font-size:10px;color:#D0362B;letter-spacing:3px;margin:6px 0 10px;font-weight:700}
+.leg{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:12px;color:#717171;margin-bottom:14px}
+.leg span{display:flex;align-items:center;gap:6px}.leg i{width:18px;height:18px;border-radius:4px;border:1.5px solid #DDDDDD;display:inline-block}
+.warn{background:#FFF3F1;border:1px solid #FF5A4E;padding:10px 12px;font-size:13px;margin-bottom:10px;display:none}
+.bar{padding:12px 16px 16px;border-top:1px solid #EBEBEB;background:#F7F7F7;position:sticky;bottom:0;z-index:5}
+.bar .in{max-width:968px;margin:0 auto}
+.bar .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px}
+.sel{font-size:12px;color:#717171}.tot{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:28px;color:#FF5A4E}
+.btn{width:100%;background:#FF5A4E;color:#FFFFFF;border:0;min-height:48px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:22px;letter-spacing:1px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ghost{background:transparent;border:2px solid #D0362B;color:#D0362B;min-height:44px;padding:0 14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:17px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center}
+.card{background:#F7F7F7;border:1px solid #EBEBEB;padding:16px;max-width:520px;margin:0 auto}
+.line{display:flex;justify-content:space-between;padding:6px 0;font-size:15px}
+.grand{border-top:1px dashed #EBEBEB;margin-top:6px;padding-top:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:28px;color:#FF5A4E}
+.pay{background:#FF5A4E;color:#FFFFFF;padding:8px 12px;font-weight:700;font-size:14px;margin:0 auto 14px;max-width:520px}
+.tick{background:#222222;color:#FFFFFF;padding:16px;max-width:420px;margin:0 auto}
+.qrb{width:150px;height:150px;flex:none;background:#fff;line-height:0}.qrb svg{width:100%;height:100%}
+.out{background:transparent;border:2px solid #FF5A4E;color:#FF5A4E;min-height:44px;font-weight:700;padding:0 16px;margin-top:10px;width:100%}
+.vwrap{flex:1;display:flex;flex-direction:column;min-height:0}
+.vwrap iframe{border:0;width:100%;height:calc(100vh - 210px);min-height:420px;background:#000}
+.tabsx{display:flex;gap:8px;padding:10px 16px;flex-wrap:wrap;align-items:center}
+/* admin */
+.adm{display:flex;flex-wrap:wrap;background:#F6F3F1;color:#222222;min-height:70vh}
+.adm .sb{flex:0 0 210px;background:#F7F7F7;color:#222222;padding:22px 18px}
+.adm .sb div{padding:10px 12px;font-size:15px}.adm .sb .on{background:#FF5A4E;color:#FFFFFF;font-weight:700}
+.adm .mn{flex:1 1 560px;min-width:0;padding:28px 5vw}
+.adm h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:38px;margin:0 0 16px}
+.adm h2{font-size:26px}
+.kp{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:24px}.kp>div{flex:1 1 170px;background:#fff;border:1px solid #E3DCE0;padding:14px}.kp b{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:36px}
+.tb{background:#fff;border:1px solid #E3DCE0;overflow-x:auto;margin-bottom:24px}.tb .r{display:flex;min-width:520px;padding:11px 14px;border-top:1px solid #EFE9ED;font-size:14px;align-items:center}.tb .h{background:#EFE9ED;font-weight:700;border:0}
+.tb .r>div{flex:1}.bar8{height:8px;background:#EFE9ED;border-radius:4px;flex:1}.bar8 i{display:block;height:8px;background:#A3124A;border-radius:4px}
+.form{background:#fff;border:1px solid #E3DCE0;padding:18px}.form .fl{display:flex;flex-wrap:wrap;gap:14px}.form label{font-size:13px;color:#717171;display:block;margin-bottom:4px}
+.form input,.form select{width:100%;min-height:44px;padding:0 10px;border:1px solid #C9BFC6;font-size:15px;background:#fff}
+.form button{margin-top:14px;background:#A3124A;color:#fff;border:0;min-height:44px;padding:0 22px;font-weight:700}
+.msg{padding:10px 12px;font-size:14px;margin-top:14px;display:none}
+/* light theme (inspired by seats.movie): white paper, coral accent, rounded cards */
+:root{--brand:#FF5A4E;--brand-ink:#D0362B;--brand-50:#FFF3F1;--ink:#222;--muted:#717171;--line:#EBEBEB;--sunk:#F7F7F7;--best:#F4A62A}
+a{color:var(--brand-ink)}
+.demo{background:var(--brand-50);color:var(--brand-ink);border-bottom:1px solid #FFE1DC}
+nav{border-bottom:1px solid var(--line);max-width:none;background:#fff}
+.logo{font-weight:800;letter-spacing:-.5px}
+.links a{color:var(--ink)}
+.cta,.b1,.btn,.pay,.s.on{background:var(--brand);color:#fff!important}
+.cta,.b1,.b2,.btn,.ghost,.mini,.out,.chip,.show,.card,.hall,.tick,.pay,.warn,.mv .a,.poster,.bar{border-radius:14px}
+.cta{border-radius:999px}
+.hero h1{font-weight:800;letter-spacing:-2px}.hero h1 span{color:var(--brand)}
+.eb,.vis .k,.st{color:var(--brand-ink)}
+.b2,.mini,.ghost{border-color:var(--ink);color:var(--ink)}
+.b2:hover,.mini:hover,.ghost:hover{background:var(--sunk)}
+.poster{box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.arw{background:rgba(255,255,255,.85);color:var(--ink);border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.2)}.arw:hover{background:var(--brand);color:#fff}
+.dot{border-color:var(--brand)}.dot.on{background:var(--brand)}
+.band{background:var(--brand-50);color:var(--brand-ink);transform:none;border-top:1px solid #FFE1DC;border-bottom:1px solid #FFE1DC;letter-spacing:2px}
+h2{font-weight:800;letter-spacing:-.5px}
+.show{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)}.show:hover{border-color:var(--brand);box-shadow:0 6px 18px rgba(0,0,0,.1)}
+.show .t{color:var(--ink);font-weight:800}
+.mv .a{color:#fff;text-shadow:none;font-weight:800;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.hall{background:#fff;border:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+footer{background:var(--sunk)}
+.chip{background:#fff;border-color:#DDDDDD;color:var(--ink)}.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.s:hover:not(.t){background:var(--brand-50)}
+.s.b{border-color:var(--best);background:#FFF5DF;box-shadow:none}
+.s.t{border-color:var(--line);background:var(--line);color:#BBB}
+.s.sd{border-color:var(--brand);box-shadow:0 0 8px var(--brand)}
+.scr{border-top-color:#222;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0));box-shadow:0 -12px 30px rgba(0,0,0,.08)}
+.rl{background:#fff}
+.warn{border-color:var(--brand);color:var(--ink)}
+.bar{box-shadow:0 -4px 18px rgba(0,0,0,.08);border-radius:14px 14px 0 0}
+.tot,.grand{color:var(--ink)}
+.tick{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.1)}
+.out{background:#fff;border-color:var(--brand);color:var(--brand-ink)}
+.adm .sb{border-right:1px solid var(--line)}.adm .sb .on{color:#fff;border-radius:10px}
+.form button{background:var(--brand)}.bar8 i{background:var(--brand)}
+.adm .sb .nv{display:block;width:100%;text-align:left;border:0;background:transparent;font-family:inherit;font-size:15px;color:var(--ink);padding:10px 12px;border-radius:10px;cursor:pointer}
+.adm .sb .nv:hover{background:#EBEBEB}.adm .sb .nv.on{background:var(--brand);color:#fff;font-weight:700}
+.adm h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
+/* calmer, plainer pass: sentence case, no shouting, fewer effects */
+body{font-size:16px;line-height:1.5}
+.logo{font-size:22px}
+.cta,.b1,.b2,.btn,.ghost,.mini,.out{font-family:inherit;font-weight:600;font-size:15px;letter-spacing:0;text-transform:none}
+.cta,.b1,.b2,.btn,.ghost,.mini,.out,.chip,.show,.card,.hall,.tick,.pay,.warn,.mv .a,.poster{border-radius:8px}
+.cta{border-radius:8px;padding:0 18px;min-height:40px}
+.b1{padding:12px 22px}.b2{padding:10px 20px;border-width:1.5px}
+.hero{padding:40px 5vw 48px;gap:48px}
+.hero h1{font-size:clamp(40px,6vw,64px);font-weight:700;letter-spacing:-1.5px;line-height:1.02;margin:8px 0 12px}
+.eb{font-size:14px;font-weight:600;letter-spacing:0;color:var(--muted)}
+.poster{flex:0 1 360px;aspect-ratio:3/4;height:auto;align-self:center;background:none;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.arw{width:34px;height:34px;font-size:22px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.dots{margin-top:30px}.dot{width:8px;height:8px;border-width:0;background:#DDD}.dot.on{background:var(--ink)}
+.sec{padding:40px 5vw 8px}
+h2{font-size:24px;font-weight:700;letter-spacing:-.3px;margin:0 0 6px}
+.note{margin:0 0 16px;font-size:14px}
+.show{box-shadow:none;padding:14px 16px}.show:hover{box-shadow:none;border-color:var(--ink)}
+.show .t{font-size:22px;font-weight:700}
+#hPT{display:none}.poster.nopic{background:#F4F1EF}.poster.nopic #hPT{display:block}
+/* hero backdrop: the current movie's poster, blurred and darkened, full width */
+body{overflow-x:clip}
+.hero{position:relative;isolation:isolate;color:#fff}
+.hbg{position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;background:#2a2a2a center/cover no-repeat;transition:opacity .5s ease;overflow:hidden}
+.hbg::before{content:'';position:absolute;inset:-40px;background:inherit;filter:blur(30px) saturate(1.1);}
+.hbg::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.7))}
+#hP,#hT{cursor:pointer}
+.drs{display:grid;gap:8px;max-width:520px}
+.dr{display:flex;gap:16px;font-size:15px;line-height:1.45}.dr span{flex:0 0 96px;color:rgba(255,255,255,.65)}.dr b{font-weight:500}
+.tm{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1.5px solid rgba(255,255,255,.7);border-radius:8px;color:#fff;text-decoration:none;font-weight:600}
+.tm:hover{background:#fff;color:#222}
+.hero .eb{color:rgba(255,255,255,.75)}
+.hero .muted{color:rgba(255,255,255,.8)}
+.hero .b2{border-color:#fff;color:#fff}.hero .b2:hover{background:rgba(255,255,255,.15)}
+.hero .dot{background:rgba(255,255,255,.45)}.hero .dot.on{background:#fff}
+.hero{padding-top:48px;padding-bottom:56px}
+.mv .a:has(img){aspect-ratio:3/4;height:auto;padding:0;font-size:0;background:none}
+.mv .a:not(:has(img)){aspect-ratio:3/4;height:auto}
+.mv .a{height:300px;background:#F4F1EF;color:#555;font-size:18px;font-weight:700;line-height:1.15;box-shadow:none}
+.hall{box-shadow:none;border:1px solid var(--line);padding:20px}
+.hall h3{font-size:22px;font-weight:700;margin:0 0 4px;color:var(--ink)}
+.hall p{margin:6px 0 12px;font-size:15px}
+.vis .k{font-size:13px;font-weight:600;letter-spacing:0;color:var(--muted);margin-bottom:2px}
+footer{font-size:13px}
+.show,.mv{transition:none}
+.tot,.grand{font-weight:700}
+.bar{box-shadow:0 -1px 0 var(--line);border-radius:0}
+.tick{box-shadow:none}
+.snk{display:flex;flex-wrap:wrap;gap:24px}
+.snk .menu{flex:1 1 320px;border:1px solid var(--line);border-radius:8px;padding:6px 18px}
+.snk .it{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.snk .it:first-child{border-top:0}
+.snk .how{flex:1 1 280px;line-height:1.6}.snk .how .k{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.snk ol{margin:0;padding-left:20px}
+.snk .tabs2{display:flex;gap:8px;flex-wrap:wrap;padding:12px 0 8px}
+.snk .tab2{min-height:40px;padding:0 16px;border:1px solid #DDD;background:#fff;border-radius:999px;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink)}
+.snk .tab2.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.snk .pnl[hidden]{display:none}
+.snk .cat{font-size:13px;font-weight:600;color:var(--muted);padding:14px 0 4px}
+.snk .it{align-items:center}.snk .it span:first-child{flex:1}
+.snk .stp{display:flex;align-items:center;gap:8px;margin-left:8px}
+.snk .stp button{width:30px;height:30px;border:1px solid #DDD;background:#fff;border-radius:6px;font-size:18px;line-height:1;padding:0;color:var(--ink)}
+.snk .stp button:hover{border-color:var(--ink)}
+.snk .stp span{min-width:18px;text-align:center;font-weight:600}
+.snk .how{align-self:flex-start;border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.fl2{margin-top:12px}.fl2 label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.fl2 select,.fl2 input{width:100%;min-height:44px;padding:0 10px;border:1px solid #DDD;border-radius:6px;font-size:15px;background:#fff;font-family:inherit;text-transform:none}
+
+.tm.on{background:#fff;color:#222}
+.tm.off{opacity:.4;cursor:not-allowed}
+.chip:disabled{cursor:not-allowed}
+.chips{flex-wrap:wrap}
+.show{display:flex;gap:14px;align-items:center}
+.show .sp{width:72px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;flex:none;background:#F4F1EF}
+.show .si{min-width:0}
+</style><script src="qrcode.js"></script></head><body>
+<div class="demo">DEMO PREVIEW: showtimes and prices are placeholders. Payment is simulated, no real money.</div>
+<nav><a class="logo" href="#/">VETRI <span>E-SQUARE</span></a>
+<div class="links"><a href="#/now">Now showing</a><a href="#/screens">Screens</a><a href="#/visit">Visit us</a><a href="#/admin" style="color:#717171">Admin</a><a class="cta" href="#/book">Book tickets</a></div></nav>
+<div class="page" id="app"></div>
+<footer><div>Vetri E-Square, Vallam Quarry Road, Thanjavur. Website preview.</div><div>Demo payments only. No real money is charged.</div></footer>
+<script>
+(function(){
+var L='ABCDEFGHIJKL'.split(''),TIMES=['10:30 AM','1:45 PM','4:15 PM','6:50 PM','10:10 PM'],PRICES={'EPIQ 1':260,'EPIQ 2':260,'COSMIQ':260},MAXSEL=10;
+/* s = screen, times = indexes into TIMES (0-1 morning/afternoon, 2-4 evening) */
+var MOVIES=[{t:'Ramayanam',m:'Tamil · 3h 15m · U',s:'EPIQ 1',times:[0,1,2,3,4],a:'linear-gradient(160deg,#3A0D14,#FF5A4E 85%)'},{t:'Jailer 2',m:'Tamil · 2h 45m · UA16+',s:'EPIQ 2',pos:'8% 50%',times:[0,1],a:'linear-gradient(160deg,#1E1A05,#C8F03C 100%)'},{t:'John Doe',m:'Tamil · 2h 29m · UA16+',s:'EPIQ 2',times:[2,3,4],a:'linear-gradient(160deg,#2B0F3A,#8B1E5C 55%,#FF5A4E)'},{t:'Scene',m:'Tamil · 2h 29m · UA16+',s:'COSMIQ',times:[0,1,2,3,4],a:'linear-gradient(160deg,#071A33,#D0362B 90%)'}];
+/* Details taken from the posters and public release listings. Add runtime, certificate and story when confirmed. */
+var INFO={
+  'Ramayanam':{rel:'5 Nov 2026',run:'3h 15m',cert:'U',dir:'Nitesh Tiwari',hero:'Ranbir Kapoor (Rama)',heroine:'Sai Pallavi (Sita)',villain:'Yash (Ravana)',comic:'',music:'Hans Zimmer and A. R. Rahman',cast:'Sunny Deol (Hanuman), Ravie Dubey (Lakshman)',more:'Presented by Namit Malhotra. Filmed for IMAX. VFX by DNEG.'},
+  'Jailer 2':{rel:'15 Oct 2026',run:'2h 45m',cert:'UA16+',dir:'Nelson',hero:'Rajinikanth (Muthuvel Pandian)',heroine:'',villain:'Vidya Balan, S. J. Suryah, Suraj Venjaramoodu',comic:'',music:'Anirudh Ravichander',cast:'',more:'Presented by Kalanithi Maran (Sun Pictures).'},
+  'John Doe':{rel:'13 Nov 2026',run:'2h 29m',cert:'UA16+',dir:'Madhumita Sundararaman',hero:'Arjun Das (a police officer)',heroine:'Sanchana Natarajan',villain:'',comic:'',music:'Mujeeb Majeed',cast:'Zaara Vineet, Anupama Kumar',more:'A Tamil psychological thriller.'},
+  'Scene':{rel:'6 Nov 2026',run:'2h 29m',cert:'UA16+',dir:'Jithu Madhavan',hero:'Suriya (a police officer)',heroine:'Nazriya Nazim',villain:'',comic:'',music:'Sushin Shyam',cast:'Naslen, John Vijay, Anand Raj',more:'Produced by Jyotika and Suriya.'}
+};
+/* ---- dates, saved settings and bookings (demo: stored in this browser only) ---- */
+var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],DAYS=3;
+function dayInfo(off){
+  var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+off);
+  var key=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2),dm=d.getDate()+' '+MON[d.getMonth()];
+  return {key:key,label:off===0?'Today':off===1?'Tomorrow':DOW[d.getDay()],sub:dm,full:(off===0?'Today, ':off===1?'Tomorrow, ':DOW[d.getDay()]+' ')+dm};
+}
+function nowMins(){var d=new Date();return d.getHours()*60+d.getMinutes();}
+function isPast(off,t){return off===0&&tmins(TIMES[t])<=nowMins();}
+function firstOpen(m,off){for(var k=0;k<m.times.length;k++)if(!isPast(off,m.times[k]))return m.times[k];return m.times[0];}
+function liveIdx(){var o=[];MOVIES.forEach(function(m,i){if(m.times.length)o.push(i);});return o;}
+var CFG={};try{CFG=JSON.parse(localStorage.getItem('ves_cfg')||'{}')||{};}catch(e){CFG={};}
+function saveCfg(){try{localStorage.setItem('ves_cfg',JSON.stringify(CFG));}catch(e){}}
+function applyCfg(){
+  MOVIES.forEach(function(m){if(!m.def)m.def=m.times.slice();m.times=(CFG.slots&&CFG.slots[m.t])?CFG.slots[m.t].slice():m.def.slice();});
+  if(CFG.price)for(var k0 in PRICES)PRICES[k0]=+CFG.price;
+  if(CFG.prices)for(var k1 in CFG.prices)if(k1 in PRICES)PRICES[k1]=+CFG.prices[k1];
+  if(CFG.days!==undefined)DAYS=+CFG.days;
+}
+applyCfg();
+var tkC={};
+function bookings(){try{return JSON.parse(localStorage.getItem('ves_bookings')||'[]');}catch(e){return [];}}
+function saveBookings(b){tkC={};try{localStorage.setItem('ves_bookings',JSON.stringify(b));}catch(e){}}
+function takenSet(mt,dk,t){
+  var k=mt+'|'+dk+'|'+t;
+  if(!tkC[k]){var s={};bookings().forEach(function(b){if(!b.cancelled&&b.movie===mt&&b.dkey===dk&&b.t===t)b.seats.forEach(function(x){s[x]=1;});});tkC[k]=s;}
+  return tkC[k];
+}
+/* Upcoming movies: default list from public release news (unconfirmed). Admin can edit it. */
+var UPCOMING=[{t:'Godzilla Minus Zero',d:'20 Nov 2026'},{t:'Om: Chapter 1',d:'20 Nov 2026'},{t:'Avengers: Doomsday',d:'17 Dec 2026'},{t:'Dune: Part Three',d:'18 Dec 2026'},{t:'King',d:'24 Dec 2026'}];
+function upcoming(){return CFG.upcoming||UPCOMING;}
+function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function creditRows(f){function r(k,v){return '<div class="dr"><span>'+k+'</span><b>'+esc(v||'Not listed')+'</b></div>';}var c=[f.hero,f.heroine,f.villain,f.comic,f.cast].filter(Boolean).join(', ');return r('Cast',c)+r('Music',f.music);}
+function soonHTML(){
+  var u=upcoming();if(!u.length)return '';
+  return '<div class="sec" id="s-soon"><h2>Coming soon</h2><p class="muted note">Booking opens closer to the release date.</p><div class="grid" style="gap:22px">'+u.map(function(x,k){
+    var slug=String(x.t).toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    return '<a class="mv" href="#/soon/'+k+'"><div class="a">'+esc(x.t)+'<img src="posters/'+slug+'.jpg" alt="'+esc(x.t)+' poster" style="display:block;width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div><div style="font-weight:700;margin-top:10px">'+esc(x.t)+'</div><div class="muted" style="font-size:13px">'+esc(x.d)+'</div></a>';}).join('')+'</div></div>';
+}
+/* Details come from the posters and public release news. Add more when confirmed. */
+var SOON_INFO={
+  'Godzilla Minus Zero':{dir:'Takashi Yamazaki',hero:'Ryunosuke Kamiki',heroine:'Minami Hamabe',villain:'',comic:'',music:'',cast:'',more:'Written, directed and with VFX by Takashi Yamazaki. Filmed for IMAX. Opened in North America on 6 Nov 2026.'},
+  'Om: Chapter 1':{dir:'Rajkumar Periasamy',hero:'Dhanush',heroine:'Sai Pallavi, Sreeleela',villain:'',comic:'',music:'Sai Abhyankkar',cast:'Mammootty (a smuggler), Naseeruddin Shah',more:'Full title: Om - Chapter 1: Udhiram - The Blood Wood.'},
+  'Avengers: Doomsday':{dir:'',hero:'',heroine:'',villain:'',comic:'',music:'',cast:'',more:'A Marvel Studios film. Opens in the US on 18 Dec 2026, a day after India.'},
+  'Dune: Part Three':{dir:'Denis Villeneuve',hero:'Timoth\u00e9e Chalamet',heroine:'Zendaya',villain:'',comic:'',music:'',cast:'',more:'The epic conclusion. Filmed for IMAX. Opens in the US on 18 Dec 2026.'},
+  'King':{dir:'Siddharth Anand',hero:'Shah Rukh Khan',heroine:'Deepika Padukone',villain:'Abhishek Bachchan',comic:'',music:'Sachin-Jigar',cast:'Suhana Khan, Anil Kapoor, Rani Mukerji, Jackie Shroff, Arshad Warsi',more:'Produced by Red Chillies Entertainment and Marflix Pictures.'}
+};
+function soonDetail(k){
+  var x=upcoming()[k];if(!x){go('#/');return;}
+  var f=SOON_INFO[x.t]||{},slug=String(x.t).toLowerCase().replace(/[^a-z0-9]+/g,'-'),url='posters/'+slug+'.jpg';
+  function row(a,b){return b?'<div class="dr"><span>'+a+'</span><b>'+esc(b)+'</b></div>':'';}
+  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><div class="eb" style="margin-top:14px">Coming soon</div><h1 style="margin-top:6px">'+esc(x.t)+'</h1>';
+  h+='<div class="drs" style="margin-top:14px">'+row('Release date',x.d)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
+  h+='<div class="muted" style="margin:22px 0;font-size:14px">Booking opens closer to the release date.</div><a class="b1" href="#/">See what is showing now</a></div>';
+  h+='<div class="poster"><div id="hPT" style="display:block;position:absolute;left:20px;bottom:18px;font-weight:700;font-size:24px;color:#555">'+esc(x.t)+'</div><img alt="'+esc(x.t)+' poster" src="'+url+'" style="position:relative;display:block;width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div></div>';
+  app.innerHTML=h;
+}
+function movieDetail(i,d){
+  var m=MOVIES[i];if(!m){go('#/');return;}
+  d=Math.min(DAYS,Math.max(0,+d||0));
+  var f=INFO[m.t]||{},url='posters/'+m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg';
+  function row(k,v){return v?'<div class="dr"><span>'+k+'</span><b>'+v+'</b></div>':'';}
+  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><h1 style="margin-top:14px">'+m.t+'</h1><div class="muted" style="margin-bottom:18px">'+m.m+' &middot; '+m.s+'</div>';
+  h+='<div class="drs">'+row('Release date',f.rel)+row('Runtime',f.run)+row('Certificate',f.cert)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
+  if(!m.times.length){
+    h+='<div class="muted" style="margin:22px 0">No shows are scheduled for this movie right now.</div></div>';
+  }else{
+    h+='<div class="muted" style="font-size:14px;margin:18px 0 8px">Book for</div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">';
+    for(var o=0;o<=DAYS;o++){var di=dayInfo(o);h+='<a class="tm'+(o===d?' on':'')+'" href="#/movie/'+i+'/'+o+'">'+di.label+' &middot; '+di.sub+'</a>';}
+    h+='</div><div class="muted" style="font-size:14px;margin:0 0 8px">Shows on '+dayInfo(d).full+'</div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px">';
+    m.times.forEach(function(t){h+=isPast(d,t)?'<span class="tm off">'+TIMES[t]+'</span>':'<a class="tm" href="#/book/'+i+'/'+t+'/'+d+'">'+TIMES[t]+'</a>';});
+    h+='</div><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" href="#/book/'+i+'/'+firstOpen(m,d)+'/'+d+'">Book seats</a><a class="b2" href="#/view">See the view from your seat</a></div></div>';
+  }
+  h+='<div class="poster"><img alt="'+m.t+' poster" src="'+url+'" style="display:block;width:100%;height:100%;object-fit:cover;object-position:'+(m.pos||'50% 50%')+'" onerror="this.remove()"></div></div>';
+  app.innerHTML=h;
+}
+function rng(a,b){var o=[];for(var i=a;i<=b;i++)o.push(i);return o;}
+var L5=rng(1,5),all=rng(1,26);
+var FREE={A:[1,2,3],B:L5,C:L5,D:L5.concat([6]),E:L5.concat([19]),F:L5.concat([8,19,20]),G:L5.concat([6,7,8,17,18,19,20,21]),H:L5.concat(rng(6,11)),I:all,J:all,K:all.filter(function(n){return n!==17&&n!==18;}),L:all};
+var st={movie:0,t:3,date:0,sel:['H8','H9']};
+function booked(id){var r=L.indexOf(id[0]),n=+id.slice(1);
+  if(takenSet(MOVIES[st.movie].t,dayInfo(st.date).key,st.t)[id])return true;
+  if(st.t!==3||st.date!==0)return (r*7+n+st.t+st.date*5+st.movie*3)%(5+st.t%3+st.date*3)===0&&r<9;
+  return FREE[id[0]].indexOf(n)<0;}
+function stranded(){return [];
+  /* single-seat rule removed: customers may pick any seats */
+  var out=[],rows={};st.sel.forEach(function(i){rows[i[0]]=1;});var bl=[[1,5],[6,21],[22,26]];
+  for(var Lr in rows){for(var k=0;k<3;k++){for(var n=bl[k][0];n<=bl[k][1];n++){
+    var id=Lr+n;if(booked(id)||st.sel.indexOf(id)>=0)continue;
+    var nb=function(m){return m<bl[k][0]||m>bl[k][1]||booked(Lr+m);};
+    var was=nb(n-1)&&nb(n+1),now=(nb(n-1)||st.sel.indexOf(Lr+(n-1))>=0)&&(nb(n+1)||st.sel.indexOf(Lr+(n+1))>=0);
+    if(now&&!was)out.push(id);}}}
+  return out;
+}
+function qrSVG(t){var q=qrcode(0,'M');q.addData(t);q.make();return q.createSvgTag({cellSize:4,margin:2,scalable:true});}
+function inr(n){return '₹'+(n%1===0?n:n.toFixed(2));}
+function priceOf(sc){return PRICES[sc]||260;}
+function priceNote(){return Object.keys(PRICES).map(function(k){return k+' &#8377;'+PRICES[k];}).join(', ');}
+function money(){var n=st.sel.length,sub=n*priceOf(MOVIES[st.movie].s),fee=n*20,gst=Math.round(fee*0.18*100)/100;return {sub:sub,fee:fee,gst:gst,tot:sub+fee+gst};}
+var app=document.getElementById('app');
+function $(id){return document.getElementById(id);}
+function go(h){location.hash=h;}
+
+function home(){
+  var h='<div class="hero" id="hero"><div class="hbg" id="hBg"></div><div class="l"><div class="eb">Now showing</div><h1 id="hT"></h1><div class="muted" style="margin-bottom:6px" id="hM"></div><div class="muted" style="margin-bottom:24px;font-size:14px" id="hX"></div><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" id="hB" href="#/book">Book seats</a><a class="b2" href="#/view">See the view from your seat</a></div><div class="dots" id="hD"></div></div>';
+  h+='<div class="poster" id="hP"><div id="hPT" style="position:absolute;left:20px;bottom:18px;font-weight:700;font-size:28px;color:#555;line-height:1.1"></div><img id="hPI" alt="" style="display:block;width:100%;height:100%;object-fit:cover"><button class="arw" id="hPrev" aria-label="Previous movie" style="left:8px">&#8249;</button><button class="arw" id="hNext" aria-label="Next movie" style="right:8px">&#8250;</button></div></div>';
+  h+='<div class="sec" id="s-now"><h2>Next shows</h2><p class="muted note">Tickets per seat: '+priceNote()+' (demo prices).</p><div class="grid" id="nx">'+nextShows()+'</div></div><div class="sec"><h2>Now showing</h2><div class="grid" style="gap:22px">';
+  MOVIES.forEach(function(m,i){if(!m.times.length)return;h+='<a class="mv" href="#/movie/'+i+'"><div class="a">'+m.t+'<img src="posters/'+m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg" alt="'+m.t+' poster" style="display:block;width:100%;height:100%;object-fit:cover;object-position:'+(m.pos||'50% 50%')+'" onerror="this.remove()"></div><div style="font-weight:700;margin-top:10px">'+m.t+'</div><div class="muted" style="font-size:13px">'+m.m+'</div></a>';});
+  h+='</div></div>'+soonHTML()+'<div class="sec" id="s-screens"><h2>Our screens</h2><div class="grid" style="gap:22px">';
+  [['EPIQ 1','#FF5A4E','65 × 34 ft screen. 312 recliner seats in curved, stepped rows with a walkway between rows J and I.','epiq1'],['EPIQ 2','#B8730A','61 × 32 ft screen. Same recliner comfort as EPIQ 1. Seat layout to be confirmed.','epiq2'],['COSMIQ','#1F8A5B','A more intimate hall with 339 seats and a small VIP box at the back. Screen size to be confirmed.','cosmiq']].forEach(function(x){
+    h+='<div class="hall"><h3>'+x[0]+'</h3><p>'+x[2]+'</p><a class="mini" href="#/view/'+x[3]+'">Look around in 3D</a></div>';});
+  h+='</div></div><div class="sec" id="s-snacks"><h2>Snacks</h2><p class="muted note">Order from your seat. Tell us your screen and seat, and our staff will bring it to you. Sample menu and prices for this demo.</p><div class="snk"><div class="menu" id="snkMenu">';
+  h+='<div class="tabs2" role="tablist">';
+  SNACKS.forEach(function(g,k){h+='<button type="button" role="tab" class="tab2'+(k===0?' on':'')+'" data-tab="'+k+'">'+g.c+'</button>';});
+  h+='</div>';
+  SNACKS.forEach(function(g,k){h+='<div class="pnl" data-pnl="'+k+'"'+(k===0?'':' hidden')+'>';g.items.forEach(function(x){h+='<div class="it"><span>'+x.n+'</span><b>'+inr(x.p)+'</b><div class="stp"><button type="button" data-id="'+x.id+'" data-d="-1" aria-label="Remove one '+x.n+'">&minus;</button><span id="q-'+x.id+'">0</span><button type="button" data-id="'+x.id+'" data-d="1" aria-label="Add one '+x.n+'">+</button></div></div>';});h+='</div>';});
+  h+='</div><div class="how" id="snkOrder"><div class="k">Your order</div><div id="snkLines" class="muted" style="font-size:14px">Nothing added yet.</div><div class="line" style="font-weight:700;border-top:1px solid #EBEBEB;margin-top:8px"><span>Total</span><span id="snkTot">&#8377;0</span></div><div class="fl2"><label for="snkScr">Screen</label><select id="snkScr"><option value="">Choose screen</option><option>EPIQ 1</option><option>EPIQ 2</option><option>COSMIQ</option></select></div><div class="fl2"><label for="snkSeat">Seat</label><input id="snkSeat" placeholder="For example H8" maxlength="3" autocomplete="off"></div><button type="button" class="btn" id="snkGo" style="margin-top:12px">Place snack order</button><div id="snkMsg" style="font-size:14px;margin-top:10px"></div><p class="muted" style="font-size:13px;margin:10px 0 0">Demo only: no real order is sent and no money is charged. In the real site, staff would see the order on their screen.</p></div></div></div><div class="sec" id="s-visit"><h2>Visit us</h2><div class="vis"><div><div class="k">Address</div>Vetri E-Square<br>Vallam Quarry Road<br>Thanjavur</div><div><div class="k">Box office</div>Open daily, 8:00 AM to 10:00 PM<br><a href="tel:+919003490888">9003490888</a><br><a href="mailto:sailash052@gmail.com">sailash052@gmail.com</a></div></div></div>';
+  app.innerHTML=h;
+  heroInit();
+  snkInit();
+  if(nxTimer)clearInterval(nxTimer);
+  nxTimer=setInterval(function(){var g=$('nx');if(!g){clearInterval(nxTimer);return;}g.innerHTML=nextShows();},30000);
+}
+var SNACKS=[{c:'Popcorn',items:[['Salted, regular',120],['Salted, large',190],['Caramel, regular',140],['Caramel, large',210],['Cheese, regular',150]]},{c:'Drinks',items:[['Cold drink, regular',80],['Cold drink, large',110],['Cold coffee',90],['Fresh lime soda',70],['Water bottle',30]]},{c:'Bites',items:[['Samosa (2 pcs)',40],['Veg puff',35],['French fries',100],['Nachos with cheese',130]]},{c:'Combos',items:[['Large popcorn and cold drink',250],['2 regular popcorn and 2 cold drinks',420]]}];
+var SN_ALL=[],sq={};
+SNACKS.forEach(function(g){g.items=g.items.map(function(x,i){var o={n:x[0],p:x[1],id:'s'+SN_ALL.length};SN_ALL.push(o);return o;});});
+function orders(){try{return JSON.parse(localStorage.getItem('ves_orders')||'[]');}catch(e){return [];}}
+function saveOrders(o){try{localStorage.setItem('ves_orders',JSON.stringify(o));}catch(e){}}
+function snkUpdate(){
+  var lines=[],tot=0;
+  SN_ALL.forEach(function(x){var q=sq[x.id]||0,el=$('q-'+x.id);if(el)el.textContent=q;if(q){lines.push(q+' &times; '+x.n+' <span style="float:right">'+inr(q*x.p)+'</span>');tot+=q*x.p;}});
+  $('snkLines').innerHTML=lines.length?lines.join('<br>'):'Nothing added yet.';
+  $('snkTot').textContent=inr(tot);
+}
+function snkInit(){
+  sq={};
+  $('snkMenu').onclick=function(e){
+    var t=e.target.closest('button[data-tab]');
+    if(t){var k=t.getAttribute('data-tab');
+      $('snkMenu').querySelectorAll('.tab2').forEach(function(x){x.classList.toggle('on',x===t);});
+      $('snkMenu').querySelectorAll('.pnl').forEach(function(p){p.hidden=p.getAttribute('data-pnl')!==k;});return;}
+    var b=e.target.closest('button[data-id]');if(!b)return;var id=b.getAttribute('data-id'),q=(sq[id]||0)+ +b.getAttribute('data-d');sq[id]=Math.max(0,Math.min(20,q));snkUpdate();};
+  $('snkGo').onclick=function(){
+    var msg=$('snkMsg'),scr=$('snkScr').value,seat=$('snkSeat').value.trim().toUpperCase(),items=[],tot=0;
+    SN_ALL.forEach(function(x){if(sq[x.id]){items.push({n:x.n,q:sq[x.id],p:x.p});tot+=sq[x.id]*x.p;}});
+    msg.style.color='#D0362B';
+    if(!items.length){msg.textContent='Add at least one item.';return;}
+    if(!scr){msg.textContent='Choose your screen.';return;}
+    var m=/^([A-L])(\d{1,2})$/.exec(seat);
+    if(!m||+m[2]<1||+m[2]>26){msg.textContent='Enter your seat like H8 (rows A to L, seats 1 to 26).';return;}
+    var id='SN'+Math.floor(1000+Math.random()*9000),o=orders();
+    o.push({id:id,screen:scr,seat:seat,items:items,total:tot,time:new Date().toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}),done:false});
+    saveOrders(o);sq={};snkUpdate();
+    msg.style.color='#1F8A5B';msg.textContent='Order '+id+' placed. Staff will bring it to '+scr+', seat '+seat+'.';
+  };
+  snkUpdate();
+}
+function tmins(t){var m=/(\d+):(\d+)\s*(AM|PM)/i.exec(t);return (+m[1]%12+(m[3].toUpperCase()==='PM'?12:0))*60+ +m[2];}
+/* Upcoming shows based on the visitor's real clock; first show per screen is marked NEXT */
+function nextShows(){
+  var d=new Date(),nm=d.getHours()*60+d.getMinutes(),all=[];
+  MOVIES.forEach(function(m,j){m.times.forEach(function(i){all.push({m:m,j:j,i:i,tm:tmins(TIMES[i])});});});
+  all.sort(function(a,b){return a.tm-b.tm||a.j-b.j;});
+  var up=all.filter(function(x){return x.tm>nm;}),tomorrow=!up.length;
+  if(tomorrow)up=all;
+  var h='<div class="muted" style="flex:1 1 100%;font-size:14px">'+(tomorrow?'No more shows today. Tomorrow\'s shows:':'Now '+d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})+'. Upcoming shows today:')+'</div>',seen={};
+  up.forEach(function(x){
+    var first=!seen[x.m.s];seen[x.m.s]=1;
+    var left=x.tm-nm,tag=first?(tomorrow?'First show':(left<=120?'Next &middot; in '+(left>=60?Math.floor(left/60)+' h '+left%60+' min':left+' min'):'Next')):'';
+    h+='<a class="show" href="#/book/'+x.j+'/'+x.i+'"'+(first?' style="border-color:#FF5A4E"':'')+'><img class="sp" src="posters/'+x.m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg" alt="" style="object-position:'+(x.m.pos||'50% 50%')+'" onerror="this.remove()"><div class="si">'+(tag?'<div style="color:#FF5A4E;font-size:12px;font-weight:600;margin-bottom:4px">'+tag+'</div>':'')+'<div class="t">'+TIMES[x.i]+'</div><div style="font-weight:600;margin-top:6px">'+x.m.t+'</div><div class="muted" style="font-size:13px;margin-top:2px">'+x.m.s+'</div></div></a>';});
+  return h;
+}
+var nxTimer=null;
+var heroTimer=null;
+function heroInit(){
+  if(heroTimer)clearInterval(heroTimer);
+  var live=liveIdx(),cur=0,n=live.length,hero=$('hero');
+  if(!n){hero.style.display='none';return;}
+  function show(i){
+    cur=(i+n)%n;var gi=live[cur],m=MOVIES[gi];
+    $('hT').textContent=m.t;
+    $('hM').innerHTML=m.m+' &middot; '+m.s;
+    $('hX').textContent='Today: '+m.times.map(function(i){return TIMES[i];}).join(', ');
+    $('hB').href='#/book/'+gi+'/'+firstOpen(m,0);
+    $('hPT').textContent=m.t;
+    var im=$('hPI');im.style.display='block';im.style.objectPosition=m.pos||'50% 50%';$('hP').classList.remove('nopic');im.alt=m.t+' poster';im.onerror=function(){im.style.display='none';$('hP').classList.add('nopic');};
+    var url='posters/'+m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg';
+    im.src=url;
+    var bg=$('hBg');bg.style.opacity=0;
+    setTimeout(function(){if(!$('hBg'))return;bg.style.backgroundImage='url('+url+')';bg.style.opacity=1;},250);
+    var d='';live.forEach(function(g2,k){d+='<button class="dot'+(k===cur?' on':'')+'" aria-label="Show '+MOVIES[g2].t+'" data-i="'+k+'"></button>';});
+    $('hD').innerHTML=d;
+  }
+  function start(){if(heroTimer)clearInterval(heroTimer);heroTimer=setInterval(function(){if(!$('hero')){clearInterval(heroTimer);return;}show(cur+1);},5000);}
+  $('hP').onclick=function(e){if(e.target.closest('.arw'))return;go('#/movie/'+live[cur]);};
+  $('hT').onclick=function(){go('#/movie/'+live[cur]);};
+  $('hPrev').onclick=function(){show(cur-1);start();};
+  $('hNext').onclick=function(){show(cur+1);start();};
+  $('hD').onclick=function(e){var i=e.target.getAttribute('data-i');if(i!==null){show(+i);start();}};
+  var x0=null;
+  hero.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+  hero.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>40){show(cur+(dx<0?1:-1));start();}});
+  show(0);start();
+}
+function seats(){
+  if(st.bid){st.sel=[];st.bid=null;}
+  var lv=liveIdx();
+  if(!MOVIES[st.movie].times.length||MOVIES[st.movie].times.indexOf(st.t)<0){
+    if(!lv.length){app.innerHTML='<div class="bk"><p class="muted" style="padding:40px 0">No shows are scheduled right now. Please check back later.</p></div>';return;}
+    if(!MOVIES[st.movie].times.length)st.movie=lv[0];
+    st.t=firstOpen(MOVIES[st.movie],st.date);st.sel=[];
+  }
+  if(st.date>DAYS)st.date=0;
+  var SDR=stranded(),mv=MOVIES[st.movie];
+  var h='<div class="bk"><h1>'+mv.t+'</h1><div class="sub">'+mv.m+'</div><div class="chips">';
+  for(var o=0;o<=DAYS;o++){var di=dayInfo(o);h+='<button class="chip'+(st.date===o?' on':'')+'" data-d="'+o+'"><b>'+di.label+'</b><small>'+di.sub+'</small></button>';}
+  h+='</div><div class="chips" style="margin-top:8px">';
+  TIMES.forEach(function(t,i){if(mv.times.indexOf(i)<0)return;var pst=isPast(st.date,i);h+='<button class="chip'+(st.t===i?' on':'')+'" data-t="'+i+'"'+(pst?' disabled style="opacity:.4;cursor:not-allowed"':'')+'><b>'+t+'</b><small>'+(pst?'Started':mv.s)+'</small></button>';});
+  h+='</div><div class="title">'+mv.s+' &middot; '+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; &#8377;'+priceOf(mv.s)+' per seat <span style="color:#717171;font-weight:400">(demo price)</span></div><div class="hintx">Tap seats to select (up to '+MAXSEL+'). Swipe sideways to see all.</div><div class="map"><div class="inner">';
+  L.forEach(function(Lr,r){
+    h+='<div class="row" style="margin-bottom:'+(r===8?30:7)+'px"><div class="rl">'+Lr+'</div>';
+    for(var n=1;n<=26;n++){var id=Lr+n,t=booked(id),on=st.sel.indexOf(id)>=0,sd=SDR.indexOf(id)>=0,best=!t&&r>=4&&r<=9&&n>=9&&n<=18;
+      h+='<button class="s'+(t?' t':'')+(on?' on':'')+(best&&!on?' b':'')+(sd?' sd':'')+'" data-id="'+id+'" aria-label="Seat '+id+', '+(t?'occupied':on?'selected':'available')+'"'+(t?' disabled':'')+(n===5||n===21?' style="margin-right:16px"':'')+'>'+(t?'×':n)+'</button>';}
+    h+='</div>';});
+  h+='<div class="scr"></div></div></div><div class="st">Screen this way</div><div class="leg"><span><i style="border-color:#F4A62A;background:#FFF5DF"></i>Best seats</span><span><i></i>Available</span><span><i style="border-color:#EBEBEB;background:#EBEBEB"></i>Occupied</span><span><i style="background:#FF5A4E;border-color:#FF5A4E"></i>Selected</span></div></div>';
+  h+='<div class="bar"><div class="in"><div class="warn" id="warn"></div><div class="top"><div><div class="sel" id="sl"></div><div class="tot" id="sub"></div></div><a class="ghost" id="v3" href="#/view">3D VIEW</a></div><button class="btn" id="go">CONTINUE TO PAY</button></div></div>';
+  app.innerHTML=h;
+  app.querySelectorAll('.chip').forEach(function(b){b.onclick=function(){if(b.dataset.d!==undefined){st.date=+b.dataset.d;if(mv.times.indexOf(st.t)<0||isPast(st.date,st.t))st.t=firstOpen(mv,st.date);}else st.t=+b.dataset.t;st.sel=[];seats();};});
+  app.querySelectorAll('.s').forEach(function(b){b.onclick=function(){var id=b.dataset.id,i=st.sel.indexOf(id);if(i>=0)st.sel.splice(i,1);else if(st.sel.length<MAXSEL)st.sel.push(id);seats();};});
+  $('go').onclick=function(){go('#/pay');};
+  var n=st.sel.length,sr=stranded(),g=sr.length>0;
+  $('sl').textContent=n?n+' seat'+(n>1?'s':'')+': '+st.sel.join(', '):'Pick up to '+MAXSEL+' seats';
+  $('sub').textContent=inr(n*priceOf(mv.s));
+  var w=$('warn');w.style.display=g?'block':'none';if(g)w.textContent='Seat '+sr.join(', ')+' would be left alone (yellow). Pick it too, or shift your seats by one, so no seat is left on its own.';
+  $('go').disabled=!n||g;
+  $('v3').href='#/view/epiq1/'+(n?st.sel[0]:'H8');
+}
+var viewHall='epiq1',viewSeat='H8';
+function view(hall,seat){
+  viewHall=hall||'epiq1';if(seat)viewSeat=seat;
+  var names={epiq1:'EPIQ 1',epiq2:'EPIQ 2',cosmiq:'COSMIQ'};
+  var h='<div class="vwrap"><div class="tabsx"><span class="muted" style="font-size:13px">View the hall from the seat:</span>';
+  Object.keys(names).forEach(function(k){h+='<a class="'+(k===viewHall?'b1':'mini')+'" style="'+(k===viewHall?'padding:8px 16px;font-size:16px;min-height:40px':'margin:0')+'" href="#/view/'+k+'">'+names[k]+'</a>';});
+  h+='<a class="ghost" href="#/book" style="margin-left:auto">BACK TO SEATS</a></div><iframe id="fr" title="3D hall view" allow="fullscreen" src="seat-view/index.html?embed=1&hall='+viewHall+(seat&&viewHall==='epiq1'?'&seat='+seat:'')+'"></iframe></div>';
+  app.innerHTML=h;
+}
+window.addEventListener('message',function(e){
+  if(e.origin!==location.origin||!e.data)return;
+  if(e.data.type==='seat-view:seat'&&e.data.hall==='epiq1')viewSeat=e.data.seat;
+  if(e.data.type==='seat-view:book'){
+    if(e.data.hall==='epiq1'){var id=e.data.seat;if(!booked(id)&&st.sel.indexOf(id)<0&&st.sel.length<MAXSEL)st.sel.push(id);}
+    go('#/book');
+  }
+});
+function pay(){
+  var m=money();
+  if(!st.sel.length){go('#/book');return;}
+  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="pay">Seats held for 08:00. Complete payment before the timer ends. (Demo)</div><div class="card"><div class="D" style="font-weight:900;font-size:26px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div class="sub">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+MOVIES[st.movie].s+'</div><div class="line"><span>Seats</span><b>'+st.sel.join(', ')+'</b></div><div class="line"><span>Tickets ('+st.sel.length+' &times; &#8377;'+priceOf(MOVIES[st.movie].s)+')</span><span>'+inr(m.sub)+'</span></div><div class="line"><span>Convenience fee</span><span>'+inr(m.fee)+'</span></div><div class="line"><span>GST on fee</span><span>'+inr(m.gst)+'</span></div><div class="line grand"><span>TOTAL</span><span>'+inr(m.tot)+'</span></div><button class="btn" id="pb" style="margin-top:14px">PAY (DEMO, NO MONEY)</button><button class="out" id="pf">Simulate a failed payment</button><button class="out" id="pk" style="border-color:#717171;color:#222222">Back to seats</button></div></div>';
+  $('pb').onclick=function(){var m2=money(),mv=MOVIES[st.movie],di=dayInfo(st.date);st.bid='VES-DEMO-'+(1000+Math.floor(Math.random()*9000));var b=bookings();b.push({id:st.bid,movie:mv.t,screen:mv.s,dkey:di.key,dfull:di.full,t:st.t,time:TIMES[st.t],seats:st.sel.slice(),total:m2.tot,at:new Date().toLocaleString('en-IN'),cancelled:false});saveBookings(b);go('#/ticket');};$('pf').onclick=function(){go('#/failed');};$('pk').onclick=function(){go('#/book');};
+}
+function ticket(){
+  if(!st.sel.length){go('#/book');return;}
+  if(!st.bid){go('#/pay');return;}
+  var m=money(),txt=['VETRI E-SQUARE, Thanjavur','DEMO TICKET (not valid for entry)','Movie: '+MOVIES[st.movie].t,'Show: '+dayInfo(st.date).full+', '+TIMES[st.t],'Screen: '+MOVIES[st.movie].s,'Seats: '+st.sel.join(', '),'Booking ID: '+st.bid,'Paid: INR '+m.tot.toFixed(2)+' (demo, no money charged)'].join('\n');
+  var q=qrSVG(txt);
+  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="tick"><div class="D" style="font-weight:900;font-size:30px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div style="font-size:13px;margin:4px 0 10px">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+MOVIES[st.movie].s+' &middot; Tamil</div><div>Seats <b>'+st.sel.join(', ')+'</b></div><div style="border-top:2px dashed #FFFFFF;margin:14px -16px"></div><div style="display:flex;gap:16px;align-items:center"><div class="qrb">'+q+'</div><div style="font-size:12px;line-height:1.5">Booking ID<br><b style="font-size:16px">'+st.bid+'</b><br>Cancel until 2 hours before the show</div></div><div style="font-size:12px;margin-top:10px;color:#717171">Scan this code with your phone camera to see the ticket details.</div><div style="margin-top:12px;background:#FF5A4E;padding:6px 10px;font-size:12px;font-weight:700">DEMO TICKET: not valid for entry. No real money was charged.</div></div><div style="max-width:420px;margin:0 auto"><button class="out" id="cx">Cancel booking</button></div></div>';
+  $('cx').onclick=function(){var b=bookings();b.forEach(function(x){if(x.id===st.bid)x.cancelled=true;});saveBookings(b);st.sel=[];st.bid=null;go('#/');};
+}
+function failed(){
+  st.sel=[];st.bid=null;
+  app.innerHTML='<div class="bk" style="text-align:center;padding-top:40px"><div class="D" style="font-weight:900;font-size:44px;color:#FF5A4E">PAYMENT FAILED</div><p class="muted" style="line-height:1.6;max-width:420px;margin:12px auto">This was a simulated failure. Your seats have been released so other people can book them.</p><button class="btn" style="max-width:320px" id="ag">TRY AGAIN</button></div>';
+  $('ag').onclick=function(){go('#/book');};
+}
+function snackRows(limit){
+  var o=orders().slice().reverse();if(limit)o=o.slice(0,limit);
+  if(!o.length)return '<div class="tb"><div class="r" style="min-width:0;color:#717171">No snack orders yet. Orders placed on the website show up here.</div></div>';
+  return '<div class="tb">'+o.map(function(x){return '<div class="r" style="'+(x.done?'opacity:.5':'')+'"><div style="flex:0 0 70px;font-weight:700">'+x.id+'</div><div style="flex:0 0 140px"><b>'+x.screen+'</b>, seat <b>'+x.seat+'</b></div><div style="flex:2">'+x.items.map(function(i){return i.q+' &times; '+i.n;}).join(', ')+'</div><div style="flex:0 0 70px">'+inr(x.total)+'</div><div style="flex:0 0 90px">'+(x.done?'Delivered':'<button class="dl" data-id="'+x.id+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">Delivered</button>')+'</div></div>';}).join('')+'</div>';
+}
+/* Demo-only admin login. It runs in the browser, so it is NOT real security. The real site needs a server-side login. */
+var DEMO_STAFF={e:'admin@vetri.demo',p:'demo1234'};
+function staffIn(){try{return sessionStorage.getItem('ves_staff')==='1';}catch(e){return false;}}
+function staffSet(v){try{if(v)sessionStorage.setItem('ves_staff','1');else sessionStorage.removeItem('ves_staff');}catch(e){}}
+function adminLogin(){
+  app.innerHTML='<div style="max-width:380px;margin:60px auto;padding:0 16px"><h1 style="font-size:28px;font-weight:700;letter-spacing:-.5px;margin:0 0 4px">Admin login</h1><p class="muted" style="margin:0 0 18px;font-size:14px">For theatre admins only. This is a demo login.</p><form id="lf" class="card" style="padding:20px"><div class="fl2" style="margin-top:0"><label for="lEm">Email</label><input id="lEm" type="email" autocomplete="username" required></div><div class="fl2"><label for="lPw">Password</label><input id="lPw" type="password" autocomplete="current-password" required></div><button class="btn" type="submit" style="margin-top:16px">Sign in</button><div id="lMsg" style="color:#D0362B;font-size:14px;margin-top:10px"></div></form><p style="margin-top:14px;font-size:14px"><a href="#/">&larr; Back to the website</a></p></div>';
+  $('lf').onsubmit=function(e){e.preventDefault();
+    if($('lEm').value.trim().toLowerCase()===DEMO_STAFF.e&&$('lPw').value===DEMO_STAFF.p){staffSet(true);adminView='dashboard';admin();window.scrollTo(0,0);}
+    else{$('lMsg').textContent='Wrong email or password.';}};
+}
+var adminView='dashboard',adminDay=0;
+function occ(mi,off,t){
+  var s0=st.movie,d0=st.date,t0=st.t,c=0;st.movie=mi;st.date=off;st.t=t;
+  L.forEach(function(Lr){for(var n=1;n<=26;n++)if(booked(Lr+n))c++;});
+  st.movie=s0;st.date=d0;st.t=t0;return Math.round(c/312*100);
+}
+function bar(p){return '<div style="display:flex;align-items:center;gap:8px"><div class="bar8"><i style="width:'+p+'%"></i></div><span style="width:38px;font-size:13px">'+p+'%</span></div>';}
+function bookingRows(limit){
+  var b=bookings().slice().reverse();if(limit)b=b.slice(0,limit);
+  if(!b.length)return '<div class="tb"><div class="r" style="min-width:0;color:#717171">No bookings yet. Tickets paid for on the website show up here.</div></div>';
+  return '<div class="tb"><div class="r h"><div>Booking</div><div>Movie</div><div>Show</div><div>Seats</div><div>Total</div><div>Status</div></div>'+b.map(function(x){
+    return '<div class="r" style="'+(x.cancelled?'opacity:.5':'')+'"><div style="font-weight:700">'+x.id+'<div style="font-weight:400;font-size:12px;color:#717171">'+x.at+'</div></div><div>'+x.movie+'<div style="font-size:12px;color:#717171">'+x.screen+'</div></div><div>'+x.dfull+'<div style="font-size:12px;color:#717171">'+x.time+'</div></div><div>'+x.seats.join(', ')+'</div><div>'+inr(x.total)+'</div><div>'+(x.cancelled?'Cancelled':'<button class="bc" data-id="'+x.id+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">Cancel</button>')+'</div></div>';}).join('')+'</div>';
+}
+function admin(view){
+  if(typeof view==='string')adminView=view;
+  var NAV=[['dashboard','Dashboard'],['shows','Shows'],['movies','Movies'],['upcoming','Coming soon'],['bookings','Bookings'],['snacks','Snack orders'],['settings','Settings'],['seats','Seat layout']];
+  var H2='<h2 style="font-weight:700">',bk=bookings().filter(function(x){return !x.cancelled;}),body='';
+  function dateChips(){var s='<div class="chips" style="margin-bottom:14px">';for(var o=0;o<=DAYS;o++){var di=dayInfo(o);s+='<button type="button" class="chip dsel'+(adminDay===o?' on':'')+'" data-d="'+o+'"><b>'+di.label+'</b><small>'+di.sub+'</small></button>';}return s+'</div>';}
+  if(adminDay>DAYS)adminDay=0;
+  if(adminView==='dashboard'){
+    var rev=bk.reduce(function(a,x){return a+x.total;},0),sold=bk.reduce(function(a,x){return a+x.seats.length;},0),open=orders().filter(function(x){return !x.done;}).length;
+    var rows='';MOVIES.forEach(function(m,j){m.times.forEach(function(t){rows+='<div class="r"><div style="font-weight:700">'+m.t+'</div><div>'+m.s+'</div><div>'+TIMES[t]+(isPast(0,t)?' <span style="color:#717171;font-size:12px">(started)</span>':'')+'</div>'+bar(occ(j,0,t))+'</div>';});});
+    body='<h1>Today at a glance</h1><div class="kp"><div>Bookings<b>'+bk.length+'</b></div><div>Tickets sold<b>'+sold+'</b></div><div>Revenue (demo)<b>'+inr(rev)+'</b></div><div>Snack orders waiting<b>'+open+'</b></div></div>'+H2+'Shows today</h2><div class="tb"><div class="r h"><div>Movie</div><div>Screen</div><div>Time</div><div>Seats filled</div></div>'+(rows||'<div class="r" style="color:#717171">No shows are scheduled.</div>')+'</div>'+H2+'Latest bookings</h2>'+bookingRows(5)+H2+'Latest snack orders</h2>'+snackRows(3);
+  }else if(adminView==='shows'){
+    body='<h1>Shows</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Tick the times each movie plays. This applies to every day. The percentage is how full the show is on the day you pick.</p>'+dateChips()+'<div class="tb"><div class="r h"><div>Movie</div><div>Screen</div>'+TIMES.map(function(t){return '<div>'+t+'</div>';}).join('')+'</div>'+MOVIES.map(function(m,j){return '<div class="r"><div style="font-weight:700">'+m.t+'</div><div>'+m.s+'</div>'+TIMES.map(function(t,i){var on=m.times.indexOf(i)>=0;return '<div><label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" class="sl" data-j="'+j+'" data-i="'+i+'"'+(on?' checked':'')+'>'+(on?'<span style="font-size:13px;color:#717171">'+occ(j,adminDay,i)+'%</span>':'')+'</label></div>';}).join('')+'</div>';}).join('')+'</div><div class="msg" id="am2"></div><button type="button" id="rs" style="margin-top:14px;min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset to the original schedule</button><p style="color:#717171;font-size:13px;margin-top:10px">Two movies on the same screen cannot play at the same time. Existing bookings stay when you remove a show.</p>';
+  }else if(adminView==='movies'){
+    body='<h1>Movies</h1><div class="tb"><div class="r h"><div>Movie</div><div>Screen</div><div>Status</div><div>Shows per day</div><div></div></div>'+MOVIES.map(function(m,j){var on=m.times.length>0;return '<div class="r"><div style="font-weight:700">'+m.t+'<div style="font-weight:400;font-size:12px;color:#717171">'+m.m+'</div></div><div>'+m.s+'</div><div>'+(on?'Showing':'Not showing')+'</div><div>'+m.times.length+'</div><div><button class="mt" data-j="'+j+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">'+(on?'Stop showing':'Start showing')+'</button></div></div>';}).join('')+'</div><p style="color:#717171;font-size:13px;margin-top:10px">A movie that is not showing is hidden from the website and cannot be booked.</p>';
+  }else if(adminView==='upcoming'){
+    var up=upcoming();
+    body='<h1>Coming soon</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">These movies appear in the Coming soon section of the website. They cannot be booked yet.</p><div class="tb"><div class="r h"><div>Movie</div><div>Release</div><div></div></div>'+(up.map(function(x,k){return '<div class="r"><div style="font-weight:700">'+esc(x.t)+'</div><div>'+esc(x.d)+'</div><div><button class="ud" data-k="'+k+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">Remove</button></div></div>';}).join('')||'<div class="r" style="min-width:0;color:#717171">Nothing listed.</div>')+'</div>'+H2+'Add a movie</h2><div class="form"><div class="fl"><div style="flex:1 1 220px"><label>Movie name</label><input id="ut"></div><div style="flex:1 1 180px"><label>Release (for example 27 Nov 2026)</label><input id="ud"></div></div><button id="ua">Add</button><div class="msg" id="am2"></div><div style="font-size:13px;color:#717171;margin-top:12px">To show a poster, add a picture named like the movie (for example <b>maaruvesham.jpg</b>) to the posters folder.</div></div>';
+  }else if(adminView==='bookings'){
+    body='<h1>Bookings</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Every ticket paid for on the website. Cancelling a booking frees its seats.</p>'+bookingRows()+'<button type="button" id="cl" style="margin-top:16px;min-height:40px;padding:0 16px;border:1px solid #D0362B;color:#D0362B;background:#fff;border-radius:6px">Clear all demo bookings and snack orders</button>';
+  }else if(adminView==='snacks'){
+    body='<h1>Snack orders</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Orders placed on the website appear here with the screen and seat. Take the snacks to that seat, then press Delivered.</p>'+snackRows();
+  }else if(adminView==='settings'){
+    body='<h1>Settings</h1><div class="form" style="max-width:480px"><div class="fl">'+Object.keys(PRICES).map(function(k){return '<div style="flex:1 1 140px"><label>'+k+' ticket price (&#8377;)</label><input class="sp" data-s="'+k+'" type="number" min="1" max="2000" value="'+PRICES[k]+'"></div>';}).join('')+'<div style="flex:1 1 100%"><label>Customers can book up to</label><select id="sd">'+[1,2,3,4,5,6,7].map(function(n){return '<option value="'+n+'"'+(n===DAYS?' selected':'')+'>'+n+' day'+(n>1?'s':'')+' ahead</option>';}).join('')+'</select></div></div><button id="ss">Save settings</button><div class="msg" id="am2"></div><div style="font-size:13px;color:#717171;margin-top:12px">Convenience fee (&#8377;20 per ticket plus GST) is fixed in this demo. Seats are held for 8 minutes and up to 10 seats can be booked at a time.</div></div>';
+  }else{
+    body='<h1>Seat layout</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Seat layouts are fixed for now. Open a hall to check it.</p><div class="tb">'+[['EPIQ 1','epiq1'],['EPIQ 2','epiq2'],['COSMIQ','cosmiq']].map(function(x){return '<div class="r"><div style="font-weight:700">'+x[0]+'</div><div><a href="#/view/'+x[1]+'">Open 3D view</a></div></div>';}).join('')+'</div>';
+  }
+  app.innerHTML='<div class="adm"><div class="sb"><div style="font-weight:800;font-size:20px;line-height:1.1;padding:0">VETRI <span style="color:#FF5A4E">E-SQUARE</span></div><div style="font-size:12px;color:#717171;padding:4px 0 20px">Admin panel</div>'+NAV.map(function(n){return '<button type="button" class="nv'+(n[0]===adminView?' on':'')+'" data-v="'+n[0]+'">'+n[1]+'</button>';}).join('')+'<a href="#/" style="display:block;margin-top:26px;color:#D0362B;font-size:14px">&larr; View website</a><button type="button" class="nv" id="lo" style="margin-top:14px;border:1px solid #DDD">Log out</button></div><div class="mn"><div style="background:#FFF4CC;border:1px solid #E5C100;padding:8px 12px;font-size:13px;margin-bottom:18px">Demo: bookings, orders and settings are saved in this browser only. The real site will keep them in a database.</div>'+body+'</div></div>';
+  function again(){admin();}
+  app.querySelectorAll('.nv').forEach(function(b){b.onclick=function(){if(b.id==='lo')return;admin(b.getAttribute('data-v'));window.scrollTo(0,0);};});
+  $('lo').onclick=function(){staffSet(false);adminLogin();window.scrollTo(0,0);};
+  app.querySelectorAll('.dl').forEach(function(b){b.onclick=function(){var o=orders();o.forEach(function(x){if(x.id===b.getAttribute('data-id'))x.done=true;});saveOrders(o);again();};});
+  app.querySelectorAll('.bc').forEach(function(b){b.onclick=function(){var o=bookings();o.forEach(function(x){if(x.id===b.getAttribute('data-id'))x.cancelled=true;});saveBookings(o);again();};});
+  app.querySelectorAll('.dsel').forEach(function(b){b.onclick=function(){adminDay=+b.getAttribute('data-d');again();};});
+  app.querySelectorAll('.mt').forEach(function(b){b.onclick=function(){var m=MOVIES[+b.getAttribute('data-j')];CFG.slots=CFG.slots||{};m.times=m.times.length?[]:m.def.slice();CFG.slots[m.t]=m.times.slice();saveCfg();again();};});
+  app.querySelectorAll('.sl').forEach(function(c){c.onchange=function(){
+    var j=+c.getAttribute('data-j'),i=+c.getAttribute('data-i'),m=MOVIES[j],box=$('am2');
+    if(c.checked){
+      var clash=MOVIES.filter(function(o,k){return k!==j&&o.s===m.s&&o.times.indexOf(i)>=0;})[0];
+      if(clash){c.checked=false;box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Clash: '+m.s+' already shows '+clash.t+' at '+TIMES[i]+'.';return;}
+      m.times.push(i);m.times.sort();
+    }else{m.times=m.times.filter(function(x){return x!==i;});}
+    CFG.slots=CFG.slots||{};CFG.slots[m.t]=m.times.slice();saveCfg();again();};});
+  app.querySelectorAll('.ud').forEach(function(b){b.onclick=function(){var u=upcoming().slice();u.splice(+b.getAttribute('data-k'),1);CFG.upcoming=u;saveCfg();again();};});
+  if($('ua'))$('ua').onclick=function(){var t=$('ut').value.trim(),d=$('ud').value.trim(),box=$('am2');if(!t){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Enter the movie name.';return;}var u=upcoming().slice();u.push({t:t,d:d||'Date to be announced'});CFG.upcoming=u;saveCfg();again();};
+  if($('rs'))$('rs').onclick=function(){delete CFG.slots;saveCfg();applyCfg();again();};
+  if($('cl'))$('cl').onclick=function(){if(confirm('Delete all demo bookings and snack orders in this browser?')){saveBookings([]);saveOrders([]);again();}};
+  if($('ss'))$('ss').onclick=function(){
+    var box=$('am2'),np={},bad=false;box.style.display='block';
+    app.querySelectorAll('.sp').forEach(function(i){var v=+i.value;if(!(v>=1&&v<=2000))bad=true;np[i.getAttribute('data-s')]=v;});
+    if(bad){box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Enter a price between 1 and 2000 for every screen.';return;}
+    delete CFG.price;CFG.prices=np;CFG.days=+$('sd').value;saveCfg();applyCfg();
+    box.style.background='#E3F6E8';box.style.border='1px solid #2E9E4F';box.textContent='Saved. The website now uses these prices and this booking window.';
+  };
+}
+function route(){
+  var p=(location.hash||'#/').replace(/^#\/?/,'').split('/');
+  var r=p[0]||'home';
+  if(r==='book'){if(p[1]!==undefined&&p[1]!==''){st.movie=+p[1]||0;if(!MOVIES[st.movie])st.movie=0;st.date=Math.min(DAYS,Math.max(0,+p[3]||0));if(p[2]!==undefined&&p[2]!==''){st.t=+p[2];}if(MOVIES[st.movie].times.indexOf(st.t)<0||isPast(st.date,st.t))st.t=firstOpen(MOVIES[st.movie],st.date);st.sel=[];}}
+  if(r==='now'||r==='screens'||r==='visit'){if(!$('s-now')||document.querySelector('.hero')===null)home();var id={now:'s-now',screens:'s-screens',visit:'s-visit'}[r];var el=$(id);if(el)el.scrollIntoView();try{history.replaceState(null,'',location.pathname+location.search+'#/');}catch(e){}return;}
+  window.scrollTo(0,0);
+  ({home:home,movie:function(){movieDetail(+p[1],p[2]);},soon:function(){soonDetail(+p[1]);},book:seats,view:function(){view(p[1],p[2]);},pay:pay,ticket:ticket,failed:failed,admin:function(){if(staffIn())admin();else adminLogin();}}[r]||home)();
+}
+try{history.scrollRestoration='manual';}catch(e){}
+window.addEventListener('hashchange',route);route();
+})();
+</script></body></html>
