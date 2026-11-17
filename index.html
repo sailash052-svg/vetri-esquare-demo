@@ -228,6 +228,9 @@ footer{font-size:13px}
 .show{display:flex;gap:14px;align-items:center}
 .show .sp{width:72px;aspect-ratio:3/4;object-fit:cover;border-radius:6px;flex:none;background:#F4F1EF}
 .show .si{min-width:0}
+#nx{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.show .t{white-space:nowrap;font-size:28px}
+.show .si{overflow-wrap:anywhere}
 </style><script src="qrcode.js"></script></head><body>
 <div class="demo">DEMO PREVIEW: showtimes and prices are placeholders. Payment is simulated, no real money.</div>
 <nav><a class="logo" href="#/">VETRI <span>E-SQUARE</span></a>
@@ -451,14 +454,17 @@ function nextShows(){
   var d=new Date(),nm=d.getHours()*60+d.getMinutes(),all=[];
   MOVIES.forEach(function(m,j){m.times.forEach(function(i){all.push({m:m,j:j,i:i,tm:tmins(TIMES[i])});});});
   all.sort(function(a,b){return a.tm-b.tm||a.j-b.j;});
-  var up=all.filter(function(x){return x.tm>nm;}),tomorrow=!up.length;
-  if(tomorrow)up=all;
-  var h='<div class="muted" style="flex:1 1 100%;font-size:14px">'+(tomorrow?'No more shows today. Tomorrow\'s shows:':'Now '+d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})+'. Upcoming shows today:')+'</div>',seen={};
-  up.forEach(function(x){
-    var first=!seen[x.m.s];seen[x.m.s]=1;
-    var left=x.tm-nm,tag=first?(tomorrow?'First show':(left<=120?'Next &middot; in '+(left>=60?Math.floor(left/60)+' h '+left%60+' min':left+' min'):'Next')):'';
-    h+='<a class="show" href="#/book/'+x.j+'/'+x.i+'"'+(first?' style="border-color:#FF5A4E"':'')+'><img class="sp" src="posters/'+x.m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg" alt="" style="object-position:'+(x.m.pos||'50% 50%')+'" onerror="this.remove()"><div class="si">'+(tag?'<div style="color:#FF5A4E;font-size:12px;font-weight:600;margin-bottom:4px">'+tag+'</div>':'')+'<div class="t">'+TIMES[x.i]+'</div><div style="font-weight:600;margin-top:6px">'+x.m.t+'</div><div class="muted" style="font-size:13px;margin-top:2px">'+x.m.s+'</div></div></a>';});
-  return h;
+  var cards='',any=false,tomorrowOnly=true;
+  ['EPIQ 1','EPIQ 2','COSMIQ'].forEach(function(sc){
+    var mine=all.filter(function(x){return x.m.s===sc;});if(!mine.length)return;
+    var x=mine.filter(function(y){return y.tm>nm;})[0],tom=false;
+    if(!x){x=mine[0];tom=true;}else tomorrowOnly=false;
+    any=true;
+    var left=x.tm-nm,tag=tom?'Tomorrow':(left<=120?'Next &middot; in '+(left>=60?Math.floor(left/60)+' h '+left%60+' min':left+' min'):'Next');
+    cards+='<a class="show" href="#/book/'+x.j+'/'+x.i+(tom&&DAYS>=1?'/1':'')+'" style="border-color:#FF5A4E"><img class="sp" src="posters/'+x.m.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg" alt="" style="object-position:'+(x.m.pos||'50% 50%')+'" onerror="this.remove()"><div class="si"><div style="color:#FF5A4E;font-size:12px;font-weight:600;margin-bottom:4px">'+tag+'</div><div class="t">'+TIMES[x.i]+'</div><div style="font-weight:600;margin-top:6px">'+x.m.t+'</div><div class="muted" style="font-size:13px;margin-top:2px">'+x.m.s+'</div></div></a>';
+  });
+  if(!any)return '<div class="muted" style="grid-column:1/-1;font-size:14px">No shows are scheduled right now.</div>';
+  return '<div class="muted" style="grid-column:1/-1;font-size:14px">'+(tomorrowOnly?'No more shows today. First show on each screen tomorrow:':'Now '+d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})+'. Next show on each screen:')+'</div>'+cards;
 }
 var nxTimer=null;
 var heroTimer=null;
