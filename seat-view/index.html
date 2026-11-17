@@ -260,7 +260,7 @@ function buildHall(key){
   frame=add(new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0x020202})));
   var sc=HC.screen,cy=HC.screenBottom+sc.h/2;
   screen.scale.set(sc.w,sc.h,1);screen.position.set(0,cy,0);
-  frame.scale.set(sc.w+1.4,sc.h+1.2,1);frame.position.set(0,cy,-0.05);
+  frame.scale.set(sc.w+0.5,sc.h+0.4,1);frame.position.set(0,cy,-0.05);
   glow.position.set(0,cy,4);
 
   // room shell
@@ -270,7 +270,7 @@ function buildHall(key){
   var ceilMat=new THREE.MeshStandardMaterial({map:ceilT,roughness:1,metalness:0,side:THREE.FrontSide});
   function plane(w,h,mat,x,y,z,ry,rx){var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);m.position.set(x,y,z);if(ry)m.rotation.y=ry;if(rx)m.rotation.x=rx;add(m);return m;}
   var len=backZ+3,midZ=backZ/2-1.5;
-  var sideMat=new THREE.MeshStandardMaterial({color:0x4e1c0a,roughness:0.95,metalness:0,side:THREE.FrontSide,emissive:0x000000});
+  var sideMat=new THREE.MeshStandardMaterial({color:0x111115,roughness:0.95,metalness:0,side:THREE.FrontSide,emissive:0x000000});
   plane(len,15,sideMat,-HW/2,5.5,midZ,Math.PI/2);
   plane(len,15,sideMat,HW/2,5.5,midZ,-Math.PI/2);
   plane(HW,15,wallMat,0,5.5,backZ,Math.PI);
@@ -280,7 +280,7 @@ function buildHall(key){
   plane(HW,len,new THREE.MeshLambertMaterial({map:ft,side:THREE.DoubleSide}),0,0,midZ,0,-Math.PI/2);
 
   // acoustic slats beside the screen
-  var slats=new THREE.InstancedMesh(new THREE.BoxGeometry(0.16,11,0.28),new THREE.MeshLambertMaterial({color:0x7a2e10}),32),sm=new THREE.Matrix4(),si=0;
+  var slats=new THREE.InstancedMesh(new THREE.BoxGeometry(0.16,11,0.28),new THREE.MeshLambertMaterial({color:0x17171c}),32),sm=new THREE.Matrix4(),si=0;
   [-1,1].forEach(function(sd){for(var k=0;k<16;k++){sm.makeTranslation(sd*(HW/2-0.14),5.6,-0.4+k*0.75);slats.setMatrixAt(si++,sm);}});
   // white light-strip lattice on both side walls (zig-zag diamonds, top and bottom rails, fan near the screen)
   (function(){
