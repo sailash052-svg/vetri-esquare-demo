@@ -81,7 +81,7 @@ footer{border-top:1px solid #EBEBEB;padding:22px 5vw;color:#717171;font-size:13p
 .grand{border-top:1px dashed #EBEBEB;margin-top:6px;padding-top:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:28px;color:#FF5A4E}
 .pay{background:#FF5A4E;color:#FFFFFF;padding:8px 12px;font-weight:700;font-size:14px;margin:0 auto 14px;max-width:520px}
 .tick{background:#222222;color:#FFFFFF;padding:16px;max-width:420px;margin:0 auto}
-.qrb{width:150px;height:150px;flex:none;background:#fff;line-height:0}.qrb svg{width:100%;height:100%}
+.qrb{width:200px;height:200px;flex:none;background:#fff;line-height:0}.qrb svg{width:100%;height:100%}
 .out{background:transparent;border:2px solid #FF5A4E;color:#FF5A4E;min-height:44px;font-weight:700;padding:0 16px;margin-top:10px;width:100%}
 .vwrap{flex:1;display:flex;flex-direction:column;min-height:0}
 .vwrap iframe{border:0;width:100%;height:calc(100vh - 210px);min-height:420px;background:#000}
@@ -304,10 +304,10 @@ function soonDetail(k){
   app.innerHTML=h;
 }
 /* Ticket link: the QR holds a web address that contains the ticket details, so any phone can open it. */
-function enc(o){var j=JSON.stringify(o),b=btoa(unescape(encodeURIComponent(j)));return b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
-function dec(x){try{x=String(x).replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';return JSON.parse(decodeURIComponent(escape(atob(x))));}catch(e){return null;}}
-function absDate(off){var d=new Date();d.setDate(d.getDate()+off);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear();}
-function ticketPayload(m){return {i:st.bid,m:MOVIES[st.movie].t,s:MOVIES[st.movie].s,d:absDate(st.date),t:TIMES[st.t],q:st.sel.slice(),p:m.tot};}
+function enc(o){var j=typeof o==='string'?o:JSON.stringify(o),b=btoa(unescape(encodeURIComponent(j)));return b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function dec(x){try{x=String(x).replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';var j=decodeURIComponent(escape(atob(x)));if(j.charAt(0)==='{')return JSON.parse(j);var a=j.split('|');if(a.length<7)return null;return {i:a[0],m:a[1],s:a[2],d:a[3],t:a[4],q:a[5].split(' ').filter(Boolean),p:+a[6]};}catch(e){return null;}}
+function absDate(off){var d=new Date();d.setDate(d.getDate()+off);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()];}
+function ticketPayload(m){return [st.bid,MOVIES[st.movie].t,MOVIES[st.movie].s,absDate(st.date),TIMES[st.t],st.sel.join(' '),Math.round(m.tot*100)/100].join('|');}
 function ticketURL(pl){return location.href.split('#')[0]+'#/t/'+enc(pl);}
 function ticketView(code){
   var d=dec(code);
@@ -320,7 +320,7 @@ function ticketView(code){
     '<div class="tktop"><div class="tkp"><img src="'+url+'" alt="'+esc(d.m)+' poster" onerror="this.remove()"></div>'+
     '<div class="tki"><div class="tkeb">Admit '+n+(n>1?' people':' person')+'</div><h1>'+esc(d.m)+'</h1><div class="muted" style="margin-bottom:14px">'+esc(info)+'</div>'+
     row('Date',d.d)+row('Show time',d.t)+row('Screen',d.s)+'<div class="tkr"><span>Seats</span><div class="tkss">'+seats+'</div></div>'+row('Booking ID',d.i)+(d.p?row('Paid (demo)','\u20B9'+(+d.p%1===0?+d.p:(+d.p).toFixed(2))):'')+'</div></div>'+
-    '<div class="tkdash"></div><div class="tkbot"><div class="qrb" style="width:120px;height:120px">'+qrSVG(location.href)+'</div><div class="muted" style="font-size:13px;line-height:1.5">Vetri E-Square, Vallam Quarry Road, Thanjavur.<br>Show this ticket at the entrance.</div></div></div></div>';
+    '<div class="tkdash"></div><div class="tkbot"><div class="qrb" style="width:170px;height:170px">'+qrSVG(location.href)+'</div><div class="muted" style="font-size:13px;line-height:1.5">Vetri E-Square, Vallam Quarry Road, Thanjavur.<br>Show this ticket at the entrance.</div></div></div></div>';
 }
 function movieDetail(i,d){
   var m=MOVIES[i];if(!m){go('#/');return;}
@@ -359,7 +359,7 @@ function stranded(){return [];
     if(now&&!was)out.push(id);}}}
   return out;
 }
-function qrSVG(t){var q=qrcode(0,'M');q.addData(t);q.make();return q.createSvgTag({cellSize:4,margin:2,scalable:true});}
+function qrSVG(t){var q=qrcode(0,'L');q.addData(t);q.make();return q.createSvgTag({cellSize:4,margin:4,scalable:true});}
 function inr(n){return '₹'+(n%1===0?n:n.toFixed(2));}
 function priceOf(sc){return PRICES[sc]||260;}
 function priceNote(){return Object.keys(PRICES).map(function(k){return k+' &#8377;'+PRICES[k];}).join(', ');}
