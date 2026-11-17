@@ -247,10 +247,10 @@ footer{font-size:13px}
 .qvp{overflow:hidden}
 .qtrack{display:flex;transition:transform .7s cubic-bezier(.4,0,.2,1)}
 .qslide{flex:0 0 100%;min-width:0;margin:0}
-.qslide p{margin:0 0 6px;font-size:clamp(19px,2.5vw,26px);font-style:italic;line-height:1.3;color:#fff}
-.qslide cite{display:block;font-style:normal;font-size:14px;color:rgba(255,255,255,.72)}
-.theatre-q{margin:0 0 22px;max-width:600px;font-size:15px;line-height:1.6;color:rgba(255,255,255,.82)}
-.theatre-q cite{display:block;margin-top:6px;font-style:normal;font-size:13px;color:rgba(255,255,255,.62)}
+.qslide p{margin:0 0 5px;font-size:clamp(15px,1.5vw,18px);font-style:italic;line-height:1.4;color:#fff}
+.qslide cite{display:block;font-style:normal;font-size:12.5px;color:rgba(255,255,255,.72)}
+.theatre-q{margin:0 0 26px;max-width:600px;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.82)}
+.theatre-q cite{display:block;margin-top:5px;font-style:normal;font-size:12px;color:rgba(255,255,255,.62)}
 .theatre-q cite::before{content:'— '}
 .qdots{display:flex;gap:8px;margin-top:14px}
 .qdot{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.4);cursor:pointer}.qdot.on{background:#fff}
@@ -465,7 +465,7 @@ function quoteInit(){
   start();
 }
 function home(){
-  var h='<div class="intro"><div class="ibg"></div><div class="il"><div class="eb">Thanjavur</div><h1>Vetri E-Square</h1><div class="qwrap" id="qt"><div class="qvp" id="qVp"><div class="qtrack" id="qTrack"></div></div><div class="qdots" id="qDots"></div></div><p class="theatre-q">“I regard the theatre as the greatest of all art forms, the most immediate way in which a human being can share with another the sense of what it is to be a human being.”<cite>Thornton Wilder</cite></p><p class="lead">A cinema on Vallam Quarry Road with three screens, recliner seats, and snacks brought to your seat.</p><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" href="#/movies">Book tickets</a><a class="b2" href="#/screens">See our screens</a></div></div></div>';
+  var h='<div class="intro"><div class="ibg"></div><div class="il"><div class="eb">Thanjavur</div><h1>Vetri E-Square</h1><div class="qwrap" id="qt"><div class="qvp" id="qVp"><div class="qtrack" id="qTrack"></div></div><div class="qdots" id="qDots"></div></div><p class="theatre-q">“I regard the theatre as the greatest of all art forms, the most immediate way in which a human being can share with another the sense of what it is to be a human being.”<cite>Thornton Wilder</cite></p><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" href="#/movies">Book tickets</a><a class="b2" href="#/screens">See our screens</a></div></div></div>';
   h+='<div class="sec" id="s-about"><h2>Welcome</h2><p class="about">Vetri E-Square is a cinema on Vallam Quarry Road, Thanjavur. We have three screens, called EPIQ 1, EPIQ 2 and COSMIQ. You can pick your own seat online, and look at the view from that seat before you book.</p><div class="facts"><div><b>3 screens</b><span>EPIQ 1, EPIQ 2 and COSMIQ</span></div><div><b>Recliner seats</b><span>In EPIQ 1 and EPIQ 2</span></div><div><b>Pick your seat</b><span>Up to 10 seats in one booking</span></div><div><b>Snacks to your seat</b><span>Tell us your screen and seat</span></div></div></div>';
   h+='<div class="sec" id="s-screens"><h2>Our screens</h2><div class="grid" style="gap:22px">';
   [['EPIQ 1','#FF5A4E','65 × 34 ft screen. 312 recliner seats in curved, stepped rows with a walkway between rows J and I.','epiq1'],['EPIQ 2','#B8730A','61 × 32 ft screen. Same recliner comfort as EPIQ 1. Seat layout to be confirmed.','epiq2'],['COSMIQ','#1F8A5B','A more intimate hall with 339 seats and a small VIP box at the back. Screen size to be confirmed.','cosmiq']].forEach(function(x){
