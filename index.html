@@ -243,6 +243,11 @@ footer{font-size:13px}
 .about{max-width:680px;font-size:17px;line-height:1.65;margin:0 0 22px}
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
 .facts>div{border:1px solid var(--line);border-radius:8px;padding:16px}.facts b{display:block;font-size:17px;margin-bottom:4px}.facts span{color:var(--muted);font-size:14px}
+.quote{margin:0 0 20px;padding:2px 0 2px 16px;border-left:3px solid var(--brand);min-height:96px;transition:opacity .45s ease}
+.quote.out{opacity:0}
+.quote p{margin:0 0 6px;font-size:clamp(20px,2.7vw,28px);font-style:italic;line-height:1.3;color:#fff}
+.quote cite{font-style:normal;font-size:14px;color:rgba(255,255,255,.72)}
+@media (prefers-reduced-motion:reduce){.quote{transition:none}}
 </style><script src="qrcode.js"></script></head><body>
 <div class="demo">DEMO PREVIEW: showtimes and prices are placeholders. Payment is simulated, no real money.</div>
 <nav><a class="logo" href="#/">VETRI <span>E-SQUARE</span></a>
@@ -417,8 +422,22 @@ function moviesPage(){
   if(nxTimer)clearInterval(nxTimer);
   nxTimer=setInterval(function(){var g=$('nx');if(!g){clearInterval(nxTimer);return;}g.innerHTML=nextShows();},30000);
 }
+/* Rotating movie quotes under the title on the intro page */
+var QUOTES=[['May the Force be with you.','Star Wars, 1977'],['Here’s looking at you, kid.','Casablanca, 1942'],['I’ll be back.','The Terminator, 1984'],['Naan oru thadava sonna, nooru thadava sonna maadhiri.','Baasha, 1995 · “If I say it once, it is like saying it a hundred times.”'],['I am Iron Man.','Iron Man, 2008']];
+var qtTimer=null;
+function quoteInit(){
+  if(qtTimer)clearInterval(qtTimer);
+  var i=0,box=$('qt');if(!box)return;
+  function show(k){$('qtT').textContent='“'+QUOTES[k][0]+'”';$('qtC').textContent=QUOTES[k][1];}
+  show(0);
+  qtTimer=setInterval(function(){
+    var b=$('qt');if(!b){clearInterval(qtTimer);return;}
+    b.classList.add('out');
+    setTimeout(function(){if(!$('qt'))return;i=(i+1)%QUOTES.length;show(i);b.classList.remove('out');},450);
+  },5000);
+}
 function home(){
-  var h='<div class="intro"><div class="ibg"></div><div class="il"><div class="eb">Thanjavur</div><h1>Vetri E-Square</h1><p class="lead">A cinema on Vallam Quarry Road with three screens, recliner seats, and snacks brought to your seat.</p><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" href="#/movies">Book tickets</a><a class="b2" href="#/screens">See our screens</a></div></div></div>';
+  var h='<div class="intro"><div class="ibg"></div><div class="il"><div class="eb">Thanjavur</div><h1>Vetri E-Square</h1><blockquote class="quote" id="qt"><p id="qtT"></p><cite id="qtC"></cite></blockquote><p class="lead">A cinema on Vallam Quarry Road with three screens, recliner seats, and snacks brought to your seat.</p><div style="display:flex;flex-wrap:wrap;gap:12px"><a class="b1" href="#/movies">Book tickets</a><a class="b2" href="#/screens">See our screens</a></div></div></div>';
   h+='<div class="sec" id="s-about"><h2>Welcome</h2><p class="about">Vetri E-Square is a cinema on Vallam Quarry Road, Thanjavur. We have three screens, called EPIQ 1, EPIQ 2 and COSMIQ. You can pick your own seat online, and look at the view from that seat before you book.</p><div class="facts"><div><b>3 screens</b><span>EPIQ 1, EPIQ 2 and COSMIQ</span></div><div><b>Recliner seats</b><span>In EPIQ 1 and EPIQ 2</span></div><div><b>Pick your seat</b><span>Up to 10 seats in one booking</span></div><div><b>Snacks to your seat</b><span>Tell us your screen and seat</span></div></div></div>';
   h+='<div class="sec" id="s-screens"><h2>Our screens</h2><div class="grid" style="gap:22px">';
   [['EPIQ 1','#FF5A4E','65 × 34 ft screen. 312 recliner seats in curved, stepped rows with a walkway between rows J and I.','epiq1'],['EPIQ 2','#B8730A','61 × 32 ft screen. Same recliner comfort as EPIQ 1. Seat layout to be confirmed.','epiq2'],['COSMIQ','#1F8A5B','A more intimate hall with 339 seats and a small VIP box at the back. Screen size to be confirmed.','cosmiq']].forEach(function(x){
@@ -431,6 +450,7 @@ function home(){
   h+='</div><div class="how" id="snkOrder"><div class="k">Your order</div><div id="snkLines" class="muted" style="font-size:14px">Nothing added yet.</div><div class="line" style="font-weight:700;border-top:1px solid #EBEBEB;margin-top:8px"><span>Total</span><span id="snkTot">&#8377;0</span></div><div class="fl2"><label for="snkScr">Screen</label><select id="snkScr"><option value="">Choose screen</option><option>EPIQ 1</option><option>EPIQ 2</option><option>COSMIQ</option></select></div><div class="fl2"><label for="snkSeat">Seat</label><input id="snkSeat" placeholder="For example H8" maxlength="3" autocomplete="off"></div><button type="button" class="btn" id="snkGo" style="margin-top:12px">Place snack order</button><div id="snkMsg" style="font-size:14px;margin-top:10px"></div><p class="muted" style="font-size:13px;margin:10px 0 0">Demo only: no real order is sent and no money is charged. In the real site, staff would see the order on their screen.</p></div></div></div><div class="sec" id="s-visit"><h2>Visit us</h2><div class="vis"><div><div class="k">Address</div>Vetri E-Square<br>Vallam Quarry Road<br>Thanjavur</div><div><div class="k">Box office</div>Open daily, 8:00 AM to 10:00 PM<br><a href="tel:+919003490822">9003490822</a><br><a href="mailto:sailash052@gmail.com">sailash052@gmail.com</a></div></div></div>';
   app.innerHTML=h;
   snkInit();
+  quoteInit();
 }
 
 var SNACKS=[{c:'Popcorn',items:[['Salted, regular',120],['Salted, large',190],['Caramel, regular',140],['Caramel, large',210],['Cheese, regular',150]]},{c:'Drinks',items:[['Cold drink, regular',80],['Cold drink, large',110],['Cold coffee',90],['Fresh lime soda',70],['Water bottle',30]]},{c:'Bites',items:[['Samosa (2 pcs)',40],['Veg puff',35],['French fries',100],['Nachos with cheese',130]]},{c:'Combos',items:[['Large popcorn and cold drink',250],['2 regular popcorn and 2 cold drinks',420]]}];
