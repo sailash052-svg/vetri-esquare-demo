@@ -210,15 +210,15 @@ footer{font-size:13px}
 .tkv{position:relative;isolation:isolate;padding:32px 16px 48px;min-height:70vh;display:flex;justify-content:center;align-items:flex-start}
 .tkv .hbg{position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;background:#2a2a2a center/cover no-repeat;overflow:hidden}
 .tkv .hbg::before{content:'';position:absolute;inset:-40px;background:inherit;filter:blur(30px) saturate(1.1)}
-.tkv .hbg::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.72))}
-.tkcard{background:#fff;color:#222;border-radius:14px;max-width:560px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden}
-.tkdemo{background:var(--brand);color:#fff;font-size:12px;font-weight:600;text-align:center;padding:8px 12px}
+.tkv .hbg::after{content:'';position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 0%,rgba(var(--thc,0,0,0),.55),rgba(var(--thc,0,0,0),0) 70%),linear-gradient(rgba(var(--thc,0,0,0),.35),rgba(0,0,0,.6))}
+.tkcard{border-top:4px solid rgb(var(--thc,208,54,43));background:#fff;color:#222;border-radius:14px;max-width:560px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden}
+.tkdemo{background:rgb(var(--thc,208,54,43));color:#fff;font-size:12px;font-weight:600;text-align:center;padding:8px 12px}
 .tktop{display:flex;gap:18px;padding:20px;flex-wrap:wrap}
 .tkp{flex:0 0 150px;aspect-ratio:3/4;border-radius:8px;overflow:hidden;background:#F4F1EF;align-self:flex-start}.tkp img{display:block;width:100%;height:100%;object-fit:cover}
 .tki{flex:1 1 220px;min-width:0}.tki h1{font-size:28px;font-weight:700;letter-spacing:-.5px;margin:2px 0 4px;line-height:1.1}
-.tkeb{font-size:13px;font-weight:600;color:var(--brand-ink)}
+.tkeb{font-size:13px;font-weight:600;color:rgb(var(--thc,208,54,43))}
 .tkr{display:flex;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:15px}.tkr span{flex:0 0 92px;color:var(--muted)}.tkr b{font-weight:600;word-break:break-word}
-.tkss{display:flex;flex-wrap:wrap;gap:6px}.tks{background:var(--ink);color:#fff;border-radius:6px;padding:2px 9px;font-weight:600;font-size:14px}
+.tkss{display:flex;flex-wrap:wrap;gap:6px}.tks{background:rgb(var(--thc,34,34,34));color:#fff;border-radius:6px;padding:2px 9px;font-weight:600;font-size:14px}
 .tkdash{border-top:2px dashed #DDD;margin:0 20px}
 .tkbot{display:flex;gap:16px;align-items:center;padding:18px 20px 22px;flex-wrap:wrap}
 .tm.on{background:#fff;color:#222}
@@ -309,18 +309,41 @@ function dec(x){try{x=String(x).replace(/-/g,'+').replace(/_/g,'/');while(x.leng
 function absDate(off){var d=new Date();d.setDate(d.getDate()+off);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()];}
 function ticketPayload(m){return [st.bid,MOVIES[st.movie].t,MOVIES[st.movie].s,absDate(st.date),TIMES[st.t],st.sel.join(' '),Math.round(m.tot*100)/100].join('|');}
 function ticketURL(pl){return location.href.split('#')[0]+'#/t/'+enc(pl);}
+/* Picks the poster's main colour (favouring vivid, mid-bright pixels), then keeps it dark enough for white text. */
+function pickTheme(d){
+  var B6=[],i,k;for(k=0;k<12;k++)B6.push([0,0,0,0]);
+  for(i=0;i<d.length;i+=4){
+    var R=d[i],G=d[i+1],B=d[i+2],mx=Math.max(R,G,B),mn=Math.min(R,G,B),c=mx-mn;if(!c)continue;
+    var sat=c/mx,br=mx/255,wt=sat*sat*br+0.001,h;
+    if(mx===R)h=((G-B)/c+6)%6;else if(mx===G)h=(B-R)/c+2;else h=(R-G)/c+4;
+    var bin=Math.floor(h*2)%12,e=B6[bin];e[0]+=R*wt;e[1]+=G*wt;e[2]+=B*wt;e[3]+=wt;
+  }
+  var best=B6[0];for(k=1;k<12;k++)if(B6[k][3]>best[3])best=B6[k];
+  if(!best[3])return [60,60,60];
+  var r=best[0]/best[3],g=best[1]/best[3],b=best[2]/best[3];
+  var L=(0.299*r+0.587*g+0.114*b)/255,q;
+  if(L>0.4){q=0.4/L;r*=q;g*=q;b*=q;}
+  else if(L<0.22){q=(0.22-L)/(1-L);r+=(255-r)*q;g+=(255-g)*q;b+=(255-b)*q;}
+  return [Math.round(r),Math.round(g),Math.round(b)];
+}
+function themeFrom(url,el){
+  var im=new Image();
+  im.onload=function(){try{var c=document.createElement('canvas');c.width=c.height=32;var x=c.getContext('2d');x.drawImage(im,0,0,32,32);var t=pickTheme(x.getImageData(0,0,32,32).data);el.style.setProperty('--thc',t.join(','));}catch(e){}};
+  im.src=url;
+}
 function ticketView(code){
   var d=dec(code);
   if(!d||typeof d.m!=='string'||!Array.isArray(d.q)||!d.q.length){app.innerHTML='<div class="bk" style="text-align:center;padding:60px 16px"><h1 style="font-size:26px">This ticket link is not valid</h1><p class="muted">Ask the box office to check your booking.</p><a class="b1" href="#/">Go to the website</a></div>';return;}
   var slug=d.m.toLowerCase().replace(/[^a-z0-9]+/g,'-'),url='posters/'+slug+'.jpg',mv=MOVIES.filter(function(x){return x.t===d.m;})[0],info=mv?mv.m:'';
   function row(k,v){return v?'<div class="tkr"><span>'+k+'</span><b>'+esc(v)+'</b></div>':'';}
   var n=d.q.length,seats=d.q.map(function(x){return '<span class="tks">'+esc(x)+'</span>';}).join('');
-  app.innerHTML='<div class="tkv"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="tkcard">'+
+  app.innerHTML='<div class="tkv" id="tkv"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="tkcard">'+
     '<div class="tkdemo">Demo ticket. Not valid for entry. No real money was charged.</div>'+
     '<div class="tktop"><div class="tkp"><img src="'+url+'" alt="'+esc(d.m)+' poster" onerror="this.remove()"></div>'+
     '<div class="tki"><div class="tkeb">Admit '+n+(n>1?' people':' person')+'</div><h1>'+esc(d.m)+'</h1><div class="muted" style="margin-bottom:14px">'+esc(info)+'</div>'+
     row('Date',d.d)+row('Show time',d.t)+row('Screen',d.s)+'<div class="tkr"><span>Seats</span><div class="tkss">'+seats+'</div></div>'+row('Booking ID',d.i)+(d.p?row('Paid (demo)','\u20B9'+(+d.p%1===0?+d.p:(+d.p).toFixed(2))):'')+'</div></div>'+
     '<div class="tkdash"></div><div class="tkbot"><div class="qrb" style="width:170px;height:170px">'+qrSVG(location.href)+'</div><div class="muted" style="font-size:13px;line-height:1.5">Vetri E-Square, Vallam Quarry Road, Thanjavur.<br>Show this ticket at the entrance.</div></div></div></div>';
+  themeFrom(url,$('tkv'));
 }
 function movieDetail(i,d){
   var m=MOVIES[i];if(!m){go('#/');return;}
