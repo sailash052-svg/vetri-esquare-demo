@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vetri E-Square, Thanjavur (demo website)</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@500;600&display=swap">
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -255,9 +255,11 @@ footer{font-size:13px}
 .qdots{display:flex;gap:8px;margin-top:14px}
 .qdot{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.4);cursor:pointer}.qdot.on{background:#fff}
 @media (prefers-reduced-motion:reduce){.qtrack{transition:none}}
+a.logo{display:inline-flex;align-items:center;gap:.7em;background:#0b0b0d;color:#fff;padding:9px 20px 8px;border-radius:4px;font-family:Cinzel,Georgia,'Times New Roman',serif;font-weight:600;font-size:19px;letter-spacing:.13em;line-height:1;text-shadow:0 0 9px rgba(255,255,255,.35)}
+a.logo span{color:#fff}
 </style><script src="qrcode.js"></script></head><body>
 <div class="demo">DEMO PREVIEW: showtimes and prices are placeholders. Payment is simulated, no real money.</div>
-<nav><a class="logo" href="#/">VETRI <span>E-SQUARE</span></a>
+<nav><a class="logo" href="#/" aria-label="Vetri E-Square"><span>VETRI</span><span>E</span><span>SQUARE</span></a>
 <div class="links"><a href="#/movies">Now showing</a><a href="#/screens">Screens</a><a href="#/snacks">Snacks</a><a href="#/visit">Visit us</a><a href="#/admin" style="color:#717171">Admin</a><a class="cta" href="#/movies">Book tickets</a></div></nav>
 <div class="page" id="app"></div>
 <footer><div>Vetri E-Square, Vallam Quarry Road, Thanjavur. Website preview.</div><div>Demo payments only. No real money is charged.</div></footer>
