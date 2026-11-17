@@ -207,6 +207,20 @@ footer{font-size:13px}
 .fl2{margin-top:12px}.fl2 label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
 .fl2 select,.fl2 input{width:100%;min-height:44px;padding:0 10px;border:1px solid #DDD;border-radius:6px;font-size:15px;background:#fff;font-family:inherit;text-transform:none}
 
+.tkv{position:relative;isolation:isolate;padding:32px 16px 48px;min-height:70vh;display:flex;justify-content:center;align-items:flex-start}
+.tkv .hbg{position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;background:#2a2a2a center/cover no-repeat;overflow:hidden}
+.tkv .hbg::before{content:'';position:absolute;inset:-40px;background:inherit;filter:blur(30px) saturate(1.1)}
+.tkv .hbg::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.72))}
+.tkcard{background:#fff;color:#222;border-radius:14px;max-width:560px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden}
+.tkdemo{background:var(--brand);color:#fff;font-size:12px;font-weight:600;text-align:center;padding:8px 12px}
+.tktop{display:flex;gap:18px;padding:20px;flex-wrap:wrap}
+.tkp{flex:0 0 150px;aspect-ratio:3/4;border-radius:8px;overflow:hidden;background:#F4F1EF;align-self:flex-start}.tkp img{display:block;width:100%;height:100%;object-fit:cover}
+.tki{flex:1 1 220px;min-width:0}.tki h1{font-size:28px;font-weight:700;letter-spacing:-.5px;margin:2px 0 4px;line-height:1.1}
+.tkeb{font-size:13px;font-weight:600;color:var(--brand-ink)}
+.tkr{display:flex;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:15px}.tkr span{flex:0 0 92px;color:var(--muted)}.tkr b{font-weight:600;word-break:break-word}
+.tkss{display:flex;flex-wrap:wrap;gap:6px}.tks{background:var(--ink);color:#fff;border-radius:6px;padding:2px 9px;font-weight:600;font-size:14px}
+.tkdash{border-top:2px dashed #DDD;margin:0 20px}
+.tkbot{display:flex;gap:16px;align-items:center;padding:18px 20px 22px;flex-wrap:wrap}
 .tm.on{background:#fff;color:#222}
 .tm.off{opacity:.4;cursor:not-allowed}
 .chip:disabled{cursor:not-allowed}
@@ -288,6 +302,25 @@ function soonDetail(k){
   h+='<div class="muted" style="margin:22px 0;font-size:14px">Booking opens closer to the release date.</div><a class="b1" href="#/">See what is showing now</a></div>';
   h+='<div class="poster"><div id="hPT" style="display:block;position:absolute;left:20px;bottom:18px;font-weight:700;font-size:24px;color:#555">'+esc(x.t)+'</div><img alt="'+esc(x.t)+' poster" src="'+url+'" style="position:relative;display:block;width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div></div>';
   app.innerHTML=h;
+}
+/* Ticket link: the QR holds a web address that contains the ticket details, so any phone can open it. */
+function enc(o){var j=JSON.stringify(o),b=btoa(unescape(encodeURIComponent(j)));return b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function dec(x){try{x=String(x).replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';return JSON.parse(decodeURIComponent(escape(atob(x))));}catch(e){return null;}}
+function absDate(off){var d=new Date();d.setDate(d.getDate()+off);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear();}
+function ticketPayload(m){return {i:st.bid,m:MOVIES[st.movie].t,s:MOVIES[st.movie].s,d:absDate(st.date),t:TIMES[st.t],q:st.sel.slice(),p:m.tot};}
+function ticketURL(pl){return location.href.split('#')[0]+'#/t/'+enc(pl);}
+function ticketView(code){
+  var d=dec(code);
+  if(!d||typeof d.m!=='string'||!Array.isArray(d.q)||!d.q.length){app.innerHTML='<div class="bk" style="text-align:center;padding:60px 16px"><h1 style="font-size:26px">This ticket link is not valid</h1><p class="muted">Ask the box office to check your booking.</p><a class="b1" href="#/">Go to the website</a></div>';return;}
+  var slug=d.m.toLowerCase().replace(/[^a-z0-9]+/g,'-'),url='posters/'+slug+'.jpg',mv=MOVIES.filter(function(x){return x.t===d.m;})[0],info=mv?mv.m:'';
+  function row(k,v){return v?'<div class="tkr"><span>'+k+'</span><b>'+esc(v)+'</b></div>':'';}
+  var n=d.q.length,seats=d.q.map(function(x){return '<span class="tks">'+esc(x)+'</span>';}).join('');
+  app.innerHTML='<div class="tkv"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="tkcard">'+
+    '<div class="tkdemo">Demo ticket. Not valid for entry. No real money was charged.</div>'+
+    '<div class="tktop"><div class="tkp"><img src="'+url+'" alt="'+esc(d.m)+' poster" onerror="this.remove()"></div>'+
+    '<div class="tki"><div class="tkeb">Admit '+n+(n>1?' people':' person')+'</div><h1>'+esc(d.m)+'</h1><div class="muted" style="margin-bottom:14px">'+esc(info)+'</div>'+
+    row('Date',d.d)+row('Show time',d.t)+row('Screen',d.s)+'<div class="tkr"><span>Seats</span><div class="tkss">'+seats+'</div></div>'+row('Booking ID',d.i)+(d.p?row('Paid (demo)','\u20B9'+(+d.p%1===0?+d.p:(+d.p).toFixed(2))):'')+'</div></div>'+
+    '<div class="tkdash"></div><div class="tkbot"><div class="qrb" style="width:120px;height:120px">'+qrSVG(location.href)+'</div><div class="muted" style="font-size:13px;line-height:1.5">Vetri E-Square, Vallam Quarry Road, Thanjavur.<br>Show this ticket at the entrance.</div></div></div></div>';
 }
 function movieDetail(i,d){
   var m=MOVIES[i];if(!m){go('#/');return;}
@@ -495,9 +528,9 @@ function pay(){
 function ticket(){
   if(!st.sel.length){go('#/book');return;}
   if(!st.bid){go('#/pay');return;}
-  var m=money(),txt=['VETRI E-SQUARE, Thanjavur','DEMO TICKET (not valid for entry)','Movie: '+MOVIES[st.movie].t,'Show: '+dayInfo(st.date).full+', '+TIMES[st.t],'Screen: '+MOVIES[st.movie].s,'Seats: '+st.sel.join(', '),'Booking ID: '+st.bid,'Paid: INR '+m.tot.toFixed(2)+' (demo, no money charged)'].join('\n');
-  var q=qrSVG(txt);
-  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="tick"><div class="D" style="font-weight:900;font-size:30px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div style="font-size:13px;margin:4px 0 10px">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+MOVIES[st.movie].s+' &middot; Tamil</div><div>Seats <b>'+st.sel.join(', ')+'</b></div><div style="border-top:2px dashed #FFFFFF;margin:14px -16px"></div><div style="display:flex;gap:16px;align-items:center"><div class="qrb">'+q+'</div><div style="font-size:12px;line-height:1.5">Booking ID<br><b style="font-size:16px">'+st.bid+'</b><br>Cancel until 2 hours before the show</div></div><div style="font-size:12px;margin-top:10px;color:#717171">Scan this code with your phone camera to see the ticket details.</div><div style="margin-top:12px;background:#FF5A4E;padding:6px 10px;font-size:12px;font-weight:700">DEMO TICKET: not valid for entry. No real money was charged.</div></div><div style="max-width:420px;margin:0 auto"><button class="out" id="cx">Cancel booking</button></div></div>';
+  var m=money(),pl=ticketPayload(m),turl=ticketURL(pl);
+  var q=qrSVG(turl);
+  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="tick"><div class="D" style="font-weight:900;font-size:30px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div style="font-size:13px;margin:4px 0 10px">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+MOVIES[st.movie].s+' &middot; Tamil</div><div>Seats <b>'+st.sel.join(', ')+'</b></div><div style="border-top:2px dashed #FFFFFF;margin:14px -16px"></div><div style="display:flex;gap:16px;align-items:center"><div class="qrb">'+q+'</div><div style="font-size:12px;line-height:1.5">Booking ID<br><b style="font-size:16px">'+st.bid+'</b><br>Cancel until 2 hours before the show</div></div><div style="font-size:12px;margin-top:10px;color:#717171">Scan this code with your phone camera to open your ticket with the movie poster and details. <a href="#/t/'+enc(pl)+'">Open ticket</a></div><div style="margin-top:12px;background:#FF5A4E;padding:6px 10px;font-size:12px;font-weight:700">DEMO TICKET: not valid for entry. No real money was charged.</div></div><div style="max-width:420px;margin:0 auto"><button class="out" id="cx">Cancel booking</button></div></div>';
   $('cx').onclick=function(){var b=bookings();b.forEach(function(x){if(x.id===st.bid)x.cancelled=true;});saveBookings(b);st.sel=[];st.bid=null;go('#/');};
 }
 function failed(){
@@ -593,7 +626,7 @@ function route(){
   if(r==='book'){if(p[1]!==undefined&&p[1]!==''){st.movie=+p[1]||0;if(!MOVIES[st.movie])st.movie=0;st.date=Math.min(DAYS,Math.max(0,+p[3]||0));if(p[2]!==undefined&&p[2]!==''){st.t=+p[2];}if(MOVIES[st.movie].times.indexOf(st.t)<0||isPast(st.date,st.t))st.t=firstOpen(MOVIES[st.movie],st.date);st.sel=[];}}
   if(r==='now'||r==='screens'||r==='visit'){if(!$('s-now')||document.querySelector('.hero')===null)home();var id={now:'s-now',screens:'s-screens',visit:'s-visit'}[r];var el=$(id);if(el)el.scrollIntoView();try{history.replaceState(null,'',location.pathname+location.search+'#/');}catch(e){}return;}
   window.scrollTo(0,0);
-  ({home:home,movie:function(){movieDetail(+p[1],p[2]);},soon:function(){soonDetail(+p[1]);},book:seats,view:function(){view(p[1],p[2]);},pay:pay,ticket:ticket,failed:failed,admin:function(){if(staffIn())admin();else adminLogin();}}[r]||home)();
+  ({home:home,movie:function(){movieDetail(+p[1],p[2]);},t:function(){ticketView(p[1]);},soon:function(){soonDetail(+p[1]);},book:seats,view:function(){view(p[1],p[2]);},pay:pay,ticket:ticket,failed:failed,admin:function(){if(staffIn())admin();else adminLogin();}}[r]||home)();
 }
 try{history.scrollRestoration='manual';}catch(e){}
 window.addEventListener('hashchange',route);route();
