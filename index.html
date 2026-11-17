@@ -232,8 +232,9 @@ footer{font-size:13px}
 .show .t{white-space:nowrap;font-size:28px}
 .show .si{overflow-wrap:anywhere}
 
-.intro{position:relative;isolation:isolate;color:#fff;padding:84px 5vw 96px}
-.intro .ibg{position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;background:radial-gradient(90% 120% at 85% 0%,rgba(255,90,78,.55),rgba(255,90,78,0) 60%),linear-gradient(135deg,#17100f,#2b1311 60%,#3a1612)}
+.intro{position:relative;isolation:isolate;color:#fff;padding:84px 5vw 96px;min-height:min(600px,78vh);display:flex;align-items:center}
+.intro .ibg{position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;background:url(theatre.jpg) center/cover no-repeat,url(theatre.svg) center/cover no-repeat,#17100f}
+.intro .ibg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,6,6,.88),rgba(10,6,6,.5) 55%,rgba(10,6,6,.12)),linear-gradient(rgba(10,6,6,0) 70%,rgba(10,6,6,.6))}
 .intro .il{max-width:640px}
 .intro h1{font-size:clamp(44px,8vw,84px);font-weight:700;letter-spacing:-2px;line-height:1;margin:10px 0 16px}
 .intro .eb{color:rgba(255,255,255,.75)}
