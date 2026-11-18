@@ -292,17 +292,22 @@ function nowMins(){var d=new Date();return d.getHours()*60+d.getMinutes();}
 function isPast(off,t){return off===0&&tmins(TIMES[t])<=nowMins();}
 function scrOf(m,off){var k=dayInfo(off).key,d=CFG.dscr&&CFG.dscr[k]&&CFG.dscr[k][m.t];return d||m.s;}
 function hasOv(m,off){var k=dayInfo(off).key;return !!(CFG.dscr&&CFG.dscr[k]&&CFG.dscr[k][m.t]);}
-function scrNames(m){var a=[];for(var o=0;o<=DAYS;o++)if(tf(m,o).length){var x=scrOf(m,o);if(a.indexOf(x)<0)a.push(x);}return a.length?a.join(' / '):m.s;}
+function scrNames(m){var a=[];for(var o=0;o<=dmax(m);o++)if(tf(m,o).length){var x=scrOf(m,o);if(a.indexOf(x)<0)a.push(x);}return a.length?a.join(' / '):m.s;}
 function rngOf(m){var r=CFG.rng&&CFG.rng[m.t];return r?{from:r.from||'',to:r.to||''}:{from:m.from||'',to:m.to||''};}
 function inRng(m,key){var r=rngOf(m);return !((r.from&&key<r.from)||(r.to&&key>r.to));}
-function tf(m,off){var k=dayInfo(off).key;if(!inRng(m,k))return [];var o=CFG.dayt&&CFG.dayt[k]&&CFG.dayt[k][m.t];return o?o.slice():m.times;}
+function tfRaw(m,off){var k=dayInfo(off).key;if(!inRng(m,k))return [];var o=CFG.dayt&&CFG.dayt[k]&&CFG.dayt[k][m.t];return o?o.slice():m.times;}
+function bookOpen(m){return !m.openKey||dayInfo(0).key>=m.openKey;}
+function tf(m,off){return bookOpen(m)?tfRaw(m,off):[];}
+function offOf(key){var p=key.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]),t=new Date();t.setHours(0,0,0,0);return Math.round((d-t)/864e5);}
+function dmax(m){return (m.openKey&&m.from&&bookOpen(m))?Math.max(DAYS,offOf(m.from)+DAYS):DAYS;}
+function firstDay(m){for(var o=0;o<=dmax(m);o++)if(tf(m,o).length)return o;return 0;}
 function relKey(d){var r=/(\d{1,2})\s+([A-Za-z]{3})[a-z]*\.?,?\s+(\d{4})/.exec(String(d||''));if(!r)return '';var mi=MON.map(function(x){return x.toLowerCase();}).indexOf(r[2].toLowerCase());if(mi<0)return '';return r[3]+'-'+('0'+(mi+1)).slice(-2)+'-'+('0'+r[1]).slice(-2);}
 function addKey(key,n){var p=key.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]+n);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
 function fmtKey(k){var p=String(k).split('-');return (+p[2])+' '+MON[+p[1]-1];}
-function clashFor(scr,times,from,to,skip){for(var off=0;off<=DAYS+60;off++){var k=dayInfo(off).key;if((from&&k<from)||(to&&k>to))continue;for(var a=0;a<MOVIES.length;a++){var o=MOVIES[a];if(o.t===skip||scrOf(o,off)!==scr)continue;var tl=tf(o,off);for(var b=0;b<times.length;b++)if(tl.indexOf(times[b])>=0)return {o:o,t:times[b],k:k};}}return null;}
-function rangeNote(m){var r=rngOf(m),t0=dayInfo(0).key,x='';if(r.from&&r.from>t0)x+='starts '+fmtKey(r.from);if(r.to)x+=(x?', ':'')+'last day '+fmtKey(r.to);return x?'<div style="font-size:12px;color:#717171">'+x+'</div>':'';}
+function clashFor(scr,times,from,to,skip){for(var off=0;off<=DAYS+60;off++){var k=dayInfo(off).key;if((from&&k<from)||(to&&k>to))continue;for(var a=0;a<MOVIES.length;a++){var o=MOVIES[a];if(o.t===skip||scrOf(o,off)!==scr)continue;var tl=tfRaw(o,off);for(var b=0;b<times.length;b++)if(tl.indexOf(times[b])>=0)return {o:o,t:times[b],k:k};}}return null;}
+function rangeNote(m){var r=rngOf(m),t0=dayInfo(0).key,x='';if(r.from&&r.from>t0)x+='starts '+fmtKey(r.from);if(r.to)x+=(x?', ':'')+'last day '+fmtKey(r.to);if(!bookOpen(m))x+=(x?', ':'')+'booking opens '+fmtKey(m.openKey);return x?'<div style="font-size:12px;color:#717171">'+x+'</div>':'';}
 function soonLive(x){var a=CFG.auto&&CFG.auto[x.t];return !!(a&&a.on&&MOVIES.some(function(m){return m.t===x.t&&m.auto&&movieLive(m);}));}
-function movieLive(m){for(var d=0;d<=DAYS;d++)if(tf(m,d).length)return true;return false;}
+function movieLive(m){for(var d=0;d<=dmax(m);d++)if(tf(m,d).length)return true;return false;}
 function dropDay(t){if(CFG.dayt)Object.keys(CFG.dayt).forEach(function(k){delete CFG.dayt[k][t];});if(CFG.dscr)Object.keys(CFG.dscr).forEach(function(k){delete CFG.dscr[k][t];});}
 function firstOpen(m,off){var tl=tf(m,off);for(var k=0;k<tl.length;k++)if(!isPast(off,tl[k]))return tl[k];return tl[0];}
 function liveIdx(){var o=[];MOVIES.forEach(function(m,i){if(movieLive(m))o.push(i);});return o;}
@@ -323,7 +328,7 @@ function applyCfg(){
   });
   var ai=0;Object.keys(CFG.auto||{}).forEach(function(t){var a=CFG.auto[t],rk=relKey(a.rel);ai++;
     if(!a.on||!rk||!a.times||!a.times.length||out.some(function(o){return o.t===t;}))return;
-    out.push({t:t,m:[a.lang||'English',a.run,a.cert].filter(Boolean).join(' \u00b7 '),s:a.s,def:a.times.slice(),times:a.times.slice(),a:GRADS[ai%GRADS.length],poster:'',custom:1,auto:1,from:rk});
+    out.push({t:t,m:[a.lang||'English',a.run,a.cert].filter(Boolean).join(' \u00b7 '),s:a.s,def:a.times.slice(),times:a.times.slice(),a:GRADS[ai%GRADS.length],poster:'',custom:1,auto:1,from:rk,openKey:(typeof a.adv==='number'&&a.adv>=0)?addKey(rk,-a.adv):''});
     INFO[t]=a.info||{};});
   MOVIES.length=0;out.forEach(function(m){MOVIES.push(m);});
   MOVIES.forEach(function(m){m.times=(CFG.slots&&CFG.slots[m.t])?CFG.slots[m.t].slice():m.def.slice();});
@@ -415,7 +420,7 @@ function ticketView(code){
 }
 function movieDetail(i,d){
   var m=MOVIES[i];if(!m){go('#/');return;}
-  d=Math.min(DAYS,Math.max(0,+d||0));
+  if(d===undefined||d==='')d=firstDay(m);d=Math.min(dmax(m),Math.max(0,+d||0));
   var f=INFO[m.t]||{},url=posterOf(m.t);
   function row(k,v){return v?'<div class="dr"><span>'+k+'</span><b>'+v+'</b></div>':'';}
   var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/movies" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><h1 style="margin-top:14px">'+m.t+'</h1><div class="muted" style="margin-bottom:18px">'+m.m+' &middot; '+scrNames(m)+'</div>';
@@ -424,7 +429,7 @@ function movieDetail(i,d){
     h+='<div class="muted" style="margin:22px 0">No shows are scheduled for this movie right now.</div></div>';
   }else{
     h+='<div class="muted" style="font-size:14px;margin:18px 0 8px">Book for</div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">';
-    for(var o=0;o<=DAYS;o++){var di=dayInfo(o);h+='<a class="tm'+(o===d?' on':'')+'" href="#/movie/'+i+'/'+o+'">'+di.label+' &middot; '+di.sub+'</a>';}
+    for(var o=0;o<=dmax(m);o++){if(!inRng(m,dayInfo(o).key))continue;var di=dayInfo(o);h+='<a class="tm'+(o===d?' on':'')+'" href="#/movie/'+i+'/'+o+'">'+di.label+' &middot; '+di.sub+'</a>';}
     h+='</div><div class="muted" style="font-size:14px;margin:0 0 8px">Shows on '+dayInfo(d).full+'</div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px">';
     var tl=tf(m,d);if(!tl.length)h+='<span class="muted">No shows on this date. Pick another day.</span>';
     tl.forEach(function(t){h+=isPast(d,t)?'<span class="tm off">'+TIMES[t]+'</span>':'<a class="tm" href="#/book/'+i+'/'+t+'/'+d+'">'+TIMES[t]+'</a>';});
@@ -588,7 +593,7 @@ function heroInit(){
     $('hT').textContent=m.t;
     $('hM').innerHTML=m.m+' &middot; '+scrNames(m);
     var tl0=tf(m,0);
-    $('hX').textContent=tl0.length?'Today: '+tl0.map(function(i){return TIMES[i];}).join(', '):'No shows today. See other days.';
+    var fd0=firstDay(m);$('hX').textContent=tl0.length?'Today: '+tl0.map(function(i){return TIMES[i];}).join(', '):(fd0>0?'First shows: '+dayInfo(fd0).full:'No shows today. See other days.');
     $('hB').href=tl0.length?'#/book/'+gi+'/'+firstOpen(m,0):'#/movie/'+gi;
     $('hPT').textContent=m.t;
     var im=$('hPI');im.style.display='block';im.style.objectPosition=m.pos||'50% 50%';$('hP').classList.remove('nopic');im.alt=m.t+' poster';im.onerror=function(){im.style.display='none';$('hP').classList.add('nopic');};
@@ -615,12 +620,12 @@ function seats(){
   var lv=liveIdx();
   if(!lv.length){app.innerHTML='<div class="bk"><p class="muted" style="padding:40px 0">No shows are scheduled right now. Please check back later.</p></div>';return;}
   if(!movieLive(MOVIES[st.movie])){st.movie=lv[0];st.sel=[];}
-  if(st.date>DAYS)st.date=0;
+  if(st.date>dmax(MOVIES[st.movie]))st.date=0;
   var tl1=tf(MOVIES[st.movie],st.date);
   if(tl1.length&&(tl1.indexOf(st.t)<0)){st.t=firstOpen(MOVIES[st.movie],st.date);st.sel=[];}
   var SDR=stranded(),mv=MOVIES[st.movie];
   var h='<div class="bk"><h1>'+mv.t+'</h1><div class="sub">'+mv.m+'</div><div class="chips">';
-  for(var o=0;o<=DAYS;o++){var di=dayInfo(o),none=!tf(mv,o).length;h+='<button class="chip'+(st.date===o?' on':'')+'" data-d="'+o+'"'+(none?' style="opacity:.55"':'')+'><b>'+di.label+'</b><small>'+(none?'No shows':di.sub)+'</small></button>';}
+  for(var o=0;o<=dmax(mv);o++){if(!inRng(mv,dayInfo(o).key))continue;var di=dayInfo(o),none=!tf(mv,o).length;h+='<button class="chip'+(st.date===o?' on':'')+'" data-d="'+o+'"'+(none?' style="opacity:.55"':'')+'><b>'+di.label+'</b><small>'+(none?'No shows':di.sub)+'</small></button>';}
   h+='</div>';
   if(!tl1.length){
     app.innerHTML=h+'<p class="muted" style="padding:30px 0">'+mv.t+' has no shows on '+dayInfo(st.date).full+'. Pick another day above.</p></div>';
@@ -770,13 +775,14 @@ function runHtml(){
 }
 function autoHtml(){
   var up=upcoming(),A=CFG.auto||{},sel='min-height:36px;padding:0 6px;border:1px solid #C9BFC6;background:#fff';
-  var o='<h2 style="font-weight:700;margin-top:26px">Automatic release</h2><p style="color:#717171;font-size:14px;margin:0 0 10px">Tick a movie to put it on a screen by itself from its release date. Before that date it stays in Coming soon. From that date it appears in Now showing and can be booked, using the screen and times chosen here. A clash with another movie on the same screen and time is refused.</p><div class="msg" id="am3"></div>';
+  var o='<h2 style="font-weight:700;margin-top:26px">Automatic release</h2><p style="color:#717171;font-size:14px;margin:0 0 10px">Tick a movie to put it on a screen by itself from its release date. Before that date it stays in Coming soon. Use Open booking to let customers book in advance: pick how many days before release booking opens. From then it appears in Now showing, with shows from the release date, using the screen and times chosen here. A clash with another movie on the same screen and time is refused.</p><div class="msg" id="am3"></div>';
   if(!up.length)return o+'<div style="color:#717171">Nothing listed.</div>';
   up.forEach(function(x,k){var a=A[x.t]||{},rk=relKey(x.d);
     o+='<div class="form ar" data-k="'+k+'" style="margin-bottom:10px;max-width:720px"><div style="font-weight:700">'+esc(x.t)+' <span style="font-weight:400;color:#717171">&middot; releases '+esc(x.d)+'</span></div>';
     if(!rk){o+='<div style="color:#717171;font-size:13px;margin-top:6px">The release date is not a full date, so it cannot be scheduled automatically. Remove it and add it again with a date like 27 Nov 2026.</div></div>';return;}
     o+='<label style="display:flex;gap:8px;align-items:center;margin:8px 0;color:#222"><input type="checkbox" class="au ae" style="width:auto;min-height:0"'+(a.on?' checked':'')+'>Add to the screens automatically on '+esc(x.d)+'</label>'
       +'<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end"><div><label>Screen</label><select class="au asc" style="'+sel+'">'+SCREENS3.map(function(n){return '<option'+(n===(a.s||'EPIQ 1')?' selected':'')+'>'+n+'</option>';}).join('')+'</select></div>'
+      +'<div><label>Open booking</label><select class="au aad" style="'+sel+'"><option value="">Same as other movies ('+DAYS+' days ahead)</option><option value="0"'+(a.adv===0?' selected':'')+'>On the release day</option>'+[1,2,3,5,7,10,14,21,30].map(function(n){return '<option value="'+n+'"'+(a.adv===n?' selected':'')+'>'+n+' day'+(n>1?'s':'')+' before release</option>';}).join('')+'</select></div>'
       +'<div><label>Language</label><select class="au alg" style="'+sel+'">'+LANGS.map(function(n){return '<option'+(n===(a.lang||'English')?' selected':'')+'>'+n+'</option>';}).join('')+'</select></div></div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:10px">'+TIMES.map(function(t,i){return '<label style="display:flex;gap:6px;align-items:center;margin:0;color:#222"><input type="checkbox" class="au atm" data-i="'+i+'" style="width:auto;min-height:0"'+((a.times||[]).indexOf(i)>=0?' checked':'')+'>'+t+'</label>';}).join('')+'</div></div>';
   });
@@ -790,10 +796,10 @@ function admin(view){
   if(adminDay>DAYS)adminDay=0;
   if(adminView==='dashboard'){
     var rev=bk.reduce(function(a,x){return a+x.total;},0),sold=bk.reduce(function(a,x){return a+x.seats.length;},0),open=orders().filter(function(x){return !x.done;}).length;
-    var rows='';MOVIES.forEach(function(m,j){tf(m,0).forEach(function(t){rows+='<div class="r"><div style="font-weight:700">'+m.t+'</div><div>'+scrOf(m,0)+'</div><div>'+TIMES[t]+(isPast(0,t)?' <span style="color:#717171;font-size:12px">(started)</span>':'')+'</div>'+bar(occ(j,0,t))+'</div>';});});
+    var rows='';MOVIES.forEach(function(m,j){tfRaw(m,0).forEach(function(t){rows+='<div class="r"><div style="font-weight:700">'+m.t+'</div><div>'+scrOf(m,0)+'</div><div>'+TIMES[t]+(isPast(0,t)?' <span style="color:#717171;font-size:12px">(started)</span>':'')+'</div>'+bar(occ(j,0,t))+'</div>';});});
     body='<h1>Today at a glance</h1><div class="kp"><div>Bookings<b>'+bk.length+'</b></div><div>Tickets sold<b>'+sold+'</b></div><div>Revenue (demo)<b>'+inr(rev)+'</b></div><div>Snack orders waiting<b>'+open+'</b></div></div>'+H2+'Shows today</h2><div class="tb"><div class="r h"><div>Movie</div><div>Screen</div><div>Time</div><div>Seats filled</div></div>'+(rows||'<div class="r" style="color:#717171">No shows are scheduled.</div>')+'</div>'+H2+'Latest bookings</h2>'+bookingRows(5)+H2+'Latest snack orders</h2>'+snackRows(3);
   }else if(adminView==='shows'){
-    body='<h1>Shows</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Pick a date, then tick the times each movie plays on <b>that date only</b>. Untick every time to remove a movie from that date. Use the Screen box to play a movie on a different screen on that date only. The percentage is how full the show is.</p>'+dateChips()+'<div class="tb"><div class="r h"><div>Movie</div><div>Screen</div>'+TIMES.map(function(t){return '<div>'+t+'</div>';}).join('')+'</div>'+MOVIES.map(function(m,j){if(!inRng(m,dayInfo(adminDay).key))return '';return '<div class="r"><div style="font-weight:700">'+m.t+(inRng(m,dayInfo(adminDay).key)?'':'<div style="font-weight:400;font-size:12px;color:#717171">Not playing on this date</div>')+'</div><div><select class="sd" data-j="'+j+'" style="min-height:34px;padding:0 4px;border:1px solid #C9BFC6;background:#fff;max-width:104px">'+SCREENS3.map(function(x){return '<option'+(x===scrOf(m,adminDay)?' selected':'')+'>'+x+'</option>';}).join('')+'</select></div>'+TIMES.map(function(t,i){var on=tf(m,adminDay).indexOf(i)>=0;return '<div><label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" class="sl" data-j="'+j+'" data-i="'+i+'"'+(on?' checked':'')+(inRng(m,dayInfo(adminDay).key)?'':' disabled')+'>'+(on?'<span style="font-size:13px;color:#717171">'+occ(j,adminDay,i)+'%</span>':'')+'</label></div>';}).join('')+'</div>';}).join('')+'</div><div class="msg" id="am2"></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px"><button type="button" id="cpd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Use this date for every day</button><button type="button" id="rsd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset this date</button><button type="button" id="rs" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset to the original schedule</button></div><p style="color:#717171;font-size:13px;margin-top:10px">Two movies on the same screen cannot play at the same time. Existing bookings stay when you remove a show.</p>'+runHtml();
+    body='<h1>Shows</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Pick a date, then tick the times each movie plays on <b>that date only</b>. Untick every time to remove a movie from that date. Use the Screen box to play a movie on a different screen on that date only. The percentage is how full the show is.</p>'+dateChips()+'<div class="tb"><div class="r h"><div>Movie</div><div>Screen</div>'+TIMES.map(function(t){return '<div>'+t+'</div>';}).join('')+'</div>'+MOVIES.map(function(m,j){if(!inRng(m,dayInfo(adminDay).key))return '';return '<div class="r"><div style="font-weight:700">'+m.t+(inRng(m,dayInfo(adminDay).key)?'':'<div style="font-weight:400;font-size:12px;color:#717171">Not playing on this date</div>')+'</div><div><select class="sd" data-j="'+j+'" style="min-height:34px;padding:0 4px;border:1px solid #C9BFC6;background:#fff;max-width:104px">'+SCREENS3.map(function(x){return '<option'+(x===scrOf(m,adminDay)?' selected':'')+'>'+x+'</option>';}).join('')+'</select></div>'+TIMES.map(function(t,i){var on=tfRaw(m,adminDay).indexOf(i)>=0;return '<div><label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" class="sl" data-j="'+j+'" data-i="'+i+'"'+(on?' checked':'')+(inRng(m,dayInfo(adminDay).key)?'':' disabled')+'>'+(on?'<span style="font-size:13px;color:#717171">'+occ(j,adminDay,i)+'%</span>':'')+'</label></div>';}).join('')+'</div>';}).join('')+'</div><div class="msg" id="am2"></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px"><button type="button" id="cpd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Use this date for every day</button><button type="button" id="rsd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset this date</button><button type="button" id="rs" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset to the original schedule</button></div><p style="color:#717171;font-size:13px;margin-top:10px">Two movies on the same screen cannot play at the same time. Existing bookings stay when you remove a show.</p>'+runHtml();
   }else if(adminView==='movies'){
     body=moviesAdminHtml();
   }else if(adminView==='upcoming'){
@@ -819,9 +825,9 @@ function admin(view){
   app.querySelectorAll('.dsel').forEach(function(b){b.onclick=function(){adminDay=+b.getAttribute('data-d');again();};});
   app.querySelectorAll('.mt').forEach(function(b){b.onclick=function(){var m=MOVIES[+b.getAttribute('data-j')];CFG.slots=CFG.slots||{};var on0=movieLive(m);m.times=on0?[]:m.def.slice();dropDay(m.t);CFG.slots[m.t]=m.times.slice();saveCfg();again();};});
   app.querySelectorAll('.sl').forEach(function(c){c.onchange=function(){
-    var j=+c.getAttribute('data-j'),i=+c.getAttribute('data-i'),m=MOVIES[j],box=$('am2'),cur=tf(m,adminDay).slice();
+    var j=+c.getAttribute('data-j'),i=+c.getAttribute('data-i'),m=MOVIES[j],box=$('am2'),cur=tfRaw(m,adminDay).slice();
     if(c.checked){
-      var clash=MOVIES.filter(function(o,k){return k!==j&&scrOf(o,adminDay)===scrOf(m,adminDay)&&tf(o,adminDay).indexOf(i)>=0;})[0];
+      var clash=MOVIES.filter(function(o,k){return k!==j&&scrOf(o,adminDay)===scrOf(m,adminDay)&&tfRaw(o,adminDay).indexOf(i)>=0;})[0];
       if(clash){c.checked=false;box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Clash: '+scrOf(m,adminDay)+' already shows '+clash.t+' at '+TIMES[i]+' on this date.';return;}
       cur.push(i);cur.sort();
     }else{cur=cur.filter(function(x){return x!==i;});}
@@ -831,7 +837,7 @@ function admin(view){
   app.querySelectorAll('.sd').forEach(function(e){e.onchange=function(){
     var j=+e.getAttribute('data-j'),m=MOVIES[j],key=dayInfo(adminDay).key,ns=e.value,box=$('am2'),old=scrOf(m,adminDay),clash=null;
     function bad(t){e.value=old;box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent=t;}
-    tf(m,adminDay).forEach(function(i){MOVIES.forEach(function(o,k){if(k!==j&&scrOf(o,adminDay)===ns&&tf(o,adminDay).indexOf(i)>=0&&!clash)clash={o:o,t:i};});});
+    tfRaw(m,adminDay).forEach(function(i){MOVIES.forEach(function(o,k){if(k!==j&&scrOf(o,adminDay)===ns&&tfRaw(o,adminDay).indexOf(i)>=0&&!clash)clash={o:o,t:i};});});
     if(clash){bad('Clash: '+ns+' already shows '+clash.o.t+' at '+TIMES[clash.t]+' on this date. Pick another screen or change that movie first.');return;}
     var nb=bookings().filter(function(b){return !b.cancelled&&b.movie===m.t&&b.dkey===key;}).length;
     if(nb){bad(m.t+' already has '+nb+' booking'+(nb>1?'s':'')+' on this date. Cancel them in Bookings before moving it to another screen.');return;}
@@ -846,7 +852,7 @@ function admin(view){
   app.querySelectorAll('.rc').forEach(function(e){e.onclick=function(){var j=+e.getAttribute('data-j'),v=rv(j);setRng(j,v[0],v[1]);};});
   function autoSave(k){
     var x=upcoming()[k],box=$('am3'),row=app.querySelector('.ar[data-k="'+k+'"]');if(!x||!row)return;
-    var ae=row.querySelector('.ae'),on=ae.checked,scr=row.querySelector('.asc').value,lang=row.querySelector('.alg').value,times=[],rk=relKey(x.d);
+    var ae=row.querySelector('.ae'),on=ae.checked,scr=row.querySelector('.asc').value,lang=row.querySelector('.alg').value,av=row.querySelector('.aad').value,adv=(av==='')?null:+av,times=[],rk=relKey(x.d);
     row.querySelectorAll('.atm').forEach(function(c){if(c.checked)times.push(+c.getAttribute('data-i'));});
     function say(t,ok){box.style.display='block';box.style.background=ok?'#E3F6E8':'#FDE3EA';box.style.border='1px solid '+(ok?'#2E9E4F':'#FF5A4E');box.textContent=t;}
     if(on){
@@ -855,16 +861,16 @@ function admin(view){
       if(cl){ae.checked=false;say('Clash: '+scr+' already shows '+cl.o.t+' at '+TIMES[cl.t]+' on '+fmtKey(cl.k)+'. Pick other times or another screen.');return;}
     }
     var f=SOON_INFO[x.t]||{},info={};for(var q in f)info[q]=f[q];info.rel=x.d;
-    CFG.auto=CFG.auto||{};CFG.auto[x.t]={on:on,s:scr,lang:lang,times:times,rel:x.d,run:f.run||'',cert:f.cert||'',info:info};
+    CFG.auto=CFG.auto||{};CFG.auto[x.t]={on:on,s:scr,lang:lang,adv:adv,times:times,rel:x.d,run:f.run||'',cert:f.cert||'',info:info};
     saveCfg();applyCfg();
-    say(on?'Saved. '+x.t+' will be added to '+scr+' on '+x.d+'.':'Saved. Automatic release is off for '+x.t+'.',1);
+    say(on?'Saved. '+x.t+' will be added to '+scr+' on '+x.d+(adv===null?'.':(adv===0?'. Booking opens on the release day.':'. Booking opens '+adv+' day'+(adv>1?'s':'')+' before release, on '+fmtKey(addKey(rk,-adv))+'.')):'Saved. Automatic release is off for '+x.t+'.',1);
   }
   app.querySelectorAll('.au').forEach(function(e){e.onchange=function(){var r=e.parentNode;while(r&&!(r.className&&String(r.className).indexOf('ar')>=0&&r.getAttribute&&r.getAttribute('data-k')!==null))r=r.parentNode;if(r)autoSave(+r.getAttribute('data-k'));};});
   if($('rsd'))$('rsd').onclick=function(){var key=dayInfo(adminDay).key;if(CFG.dayt)delete CFG.dayt[key];if(CFG.dscr)delete CFG.dscr[key];saveCfg();again();};
   if($('cpd'))$('cpd').onclick=function(){
     if(!confirm('Use the screens and times of '+dayInfo(adminDay).full+' for every day? Other dates changed earlier will be replaced.'))return;
     MOVIES.forEach(function(m){var ns=scrOf(m,adminDay);if(ns===m.s)return;if(m.auto&&CFG.auto&&CFG.auto[m.t])CFG.auto[m.t].s=ns;else if(m.custom){(CFG.added||[]).forEach(function(a){if(a.t===m.t)a.s=ns;});}else{CFG.scr=CFG.scr||{};CFG.scr[m.t]=ns;}});
-    CFG.slots=CFG.slots||{};MOVIES.forEach(function(m){var t=tf(m,adminDay).slice();m.times=t;CFG.slots[m.t]=t.slice();});
+    CFG.slots=CFG.slots||{};MOVIES.forEach(function(m){var t=tfRaw(m,adminDay).slice();m.times=t;CFG.slots[m.t]=t.slice();});
     delete CFG.dayt;delete CFG.dscr;saveCfg();applyCfg();again();};
   app.querySelectorAll('.ud').forEach(function(b){b.onclick=function(){var u=upcoming().slice();u.splice(+b.getAttribute('data-k'),1);CFG.upcoming=u;saveCfg();again();};});
   if($('ua'))$('ua').onclick=function(){var t=$('ut').value.trim(),d=$('ud').value.trim(),box=$('am2');if(!t){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Enter the movie name.';return;}var u=upcoming().slice();u.push({t:t,d:d||'Date to be announced'});CFG.upcoming=u;saveCfg();again();};
@@ -893,7 +899,7 @@ function admin(view){
     fr.readAsDataURL(f);};
   app.querySelectorAll('.ms').forEach(function(e){e.onchange=function(){
     var j=+e.getAttribute('data-j'),m=MOVIES[j],ns=e.value,clash=null;
-    for(var d0=0;d0<=DAYS;d0++)(hasOv(m,d0)?[]:tf(m,d0)).forEach(function(t){MOVIES.forEach(function(o,k){if(k!==j&&scrOf(o,d0)===ns&&tf(o,d0).indexOf(t)>=0&&!clash)clash={o:o,t:t};});});
+    for(var d0=0;d0<=DAYS;d0++)(hasOv(m,d0)?[]:tfRaw(m,d0)).forEach(function(t){MOVIES.forEach(function(o,k){if(k!==j&&scrOf(o,d0)===ns&&tfRaw(o,d0).indexOf(t)>=0&&!clash)clash={o:o,t:t};});});
     if(clash){e.value=m.s;amsg('Clash: '+ns+' already shows '+clash.o.t+' at '+TIMES[clash.t]+'. Change that movie first.');return;}
     var n=activeBookings(m.t);
     if(n){e.value=m.s;amsg(m.t+' has '+n+' upcoming booking'+(n>1?'s':'')+'. Cancel them in Bookings before moving it to another screen.');return;}
@@ -959,7 +965,7 @@ function admin(view){
 function route(){
   var p=(location.hash||'#/').replace(/^#\/?/,'').split('/');
   var r=p[0]||'home';
-  if(r==='book'){if(p[1]!==undefined&&p[1]!==''){st.movie=+p[1]||0;if(!MOVIES[st.movie])st.movie=0;st.date=Math.min(DAYS,Math.max(0,+p[3]||0));if(p[2]!==undefined&&p[2]!==''){st.t=+p[2];}var tl0=tf(MOVIES[st.movie],st.date);if(tl0.length&&(tl0.indexOf(st.t)<0||isPast(st.date,st.t)))st.t=firstOpen(MOVIES[st.movie],st.date);st.sel=[];}}
+  if(r==='book'){if(p[1]!==undefined&&p[1]!==''){st.movie=+p[1]||0;if(!MOVIES[st.movie])st.movie=0;st.date=(p[3]===undefined||p[3]==='')?firstDay(MOVIES[st.movie]):Math.min(dmax(MOVIES[st.movie]),Math.max(0,+p[3]||0));if(p[2]!==undefined&&p[2]!==''){st.t=+p[2];}var tl0=tfRaw(MOVIES[st.movie],st.date);if(tl0.length&&(tl0.indexOf(st.t)<0||isPast(st.date,st.t)))st.t=firstOpen(MOVIES[st.movie],st.date);st.sel=[];}}
   if(r==='now'){moviesPage();window.scrollTo(0,0);return;}
   if(r==='screens'||r==='visit'||r==='snacks'){if(!$('s-screens'))home();var id={screens:'s-screens',visit:'s-visit',snacks:'s-snacks'}[r];var el=$(id);if(el)el.scrollIntoView();try{history.replaceState(null,'',location.pathname+location.search+'#/');}catch(e){}return;}
   window.scrollTo(0,0);
