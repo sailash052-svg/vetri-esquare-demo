@@ -290,17 +290,20 @@ function dayInfo(off){
 }
 function nowMins(){var d=new Date();return d.getHours()*60+d.getMinutes();}
 function isPast(off,t){return off===0&&tmins(TIMES[t])<=nowMins();}
+function scrOf(m,off){var k=dayInfo(off).key,d=CFG.dscr&&CFG.dscr[k]&&CFG.dscr[k][m.t];return d||m.s;}
+function hasOv(m,off){var k=dayInfo(off).key;return !!(CFG.dscr&&CFG.dscr[k]&&CFG.dscr[k][m.t]);}
+function scrNames(m){var a=[];for(var o=0;o<=DAYS;o++)if(tf(m,o).length){var x=scrOf(m,o);if(a.indexOf(x)<0)a.push(x);}return a.length?a.join(' / '):m.s;}
 function rngOf(m){var r=CFG.rng&&CFG.rng[m.t];return r?{from:r.from||'',to:r.to||''}:{from:m.from||'',to:m.to||''};}
 function inRng(m,key){var r=rngOf(m);return !((r.from&&key<r.from)||(r.to&&key>r.to));}
 function tf(m,off){var k=dayInfo(off).key;if(!inRng(m,k))return [];var o=CFG.dayt&&CFG.dayt[k]&&CFG.dayt[k][m.t];return o?o.slice():m.times;}
 function relKey(d){var r=/(\d{1,2})\s+([A-Za-z]{3})[a-z]*\.?,?\s+(\d{4})/.exec(String(d||''));if(!r)return '';var mi=MON.map(function(x){return x.toLowerCase();}).indexOf(r[2].toLowerCase());if(mi<0)return '';return r[3]+'-'+('0'+(mi+1)).slice(-2)+'-'+('0'+r[1]).slice(-2);}
 function addKey(key,n){var p=key.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]+n);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
 function fmtKey(k){var p=String(k).split('-');return (+p[2])+' '+MON[+p[1]-1];}
-function clashFor(scr,times,from,to,skip){for(var off=0;off<=DAYS+60;off++){var k=dayInfo(off).key;if((from&&k<from)||(to&&k>to))continue;for(var a=0;a<MOVIES.length;a++){var o=MOVIES[a];if(o.t===skip||o.s!==scr)continue;var tl=tf(o,off);for(var b=0;b<times.length;b++)if(tl.indexOf(times[b])>=0)return {o:o,t:times[b],k:k};}}return null;}
+function clashFor(scr,times,from,to,skip){for(var off=0;off<=DAYS+60;off++){var k=dayInfo(off).key;if((from&&k<from)||(to&&k>to))continue;for(var a=0;a<MOVIES.length;a++){var o=MOVIES[a];if(o.t===skip||scrOf(o,off)!==scr)continue;var tl=tf(o,off);for(var b=0;b<times.length;b++)if(tl.indexOf(times[b])>=0)return {o:o,t:times[b],k:k};}}return null;}
 function rangeNote(m){var r=rngOf(m),t0=dayInfo(0).key,x='';if(r.from&&r.from>t0)x+='starts '+fmtKey(r.from);if(r.to)x+=(x?', ':'')+'last day '+fmtKey(r.to);return x?'<div style="font-size:12px;color:#717171">'+x+'</div>':'';}
 function soonLive(x){var a=CFG.auto&&CFG.auto[x.t];return !!(a&&a.on&&MOVIES.some(function(m){return m.t===x.t&&m.auto&&movieLive(m);}));}
 function movieLive(m){for(var d=0;d<=DAYS;d++)if(tf(m,d).length)return true;return false;}
-function dropDay(t){if(CFG.dayt)Object.keys(CFG.dayt).forEach(function(k){delete CFG.dayt[k][t];});}
+function dropDay(t){if(CFG.dayt)Object.keys(CFG.dayt).forEach(function(k){delete CFG.dayt[k][t];});if(CFG.dscr)Object.keys(CFG.dscr).forEach(function(k){delete CFG.dscr[k][t];});}
 function firstOpen(m,off){var tl=tf(m,off);for(var k=0;k<tl.length;k++)if(!isPast(off,tl[k]))return tl[k];return tl[0];}
 function liveIdx(){var o=[];MOVIES.forEach(function(m,i){if(movieLive(m))o.push(i);});return o;}
 var CFG={};try{CFG=JSON.parse(localStorage.getItem('ves_cfg')||'{}')||{};}catch(e){CFG={};}
@@ -372,7 +375,7 @@ function soonDetail(k){
 function enc(o){var j=typeof o==='string'?o:JSON.stringify(o),b=btoa(unescape(encodeURIComponent(j)));return b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function dec(x){try{x=String(x).replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';var j=decodeURIComponent(escape(atob(x)));if(j.charAt(0)==='{')return JSON.parse(j);var a=j.split('|');if(a.length<7)return null;return {i:a[0],m:a[1],s:a[2],d:a[3],t:a[4],q:a[5].split(' ').filter(Boolean),p:+a[6]};}catch(e){return null;}}
 function absDate(off){var d=new Date();d.setDate(d.getDate()+off);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()];}
-function ticketPayload(m){return [st.bid,MOVIES[st.movie].t,MOVIES[st.movie].s,absDate(st.date),TIMES[st.t],st.sel.join(' '),Math.round(m.tot*100)/100].join('|');}
+function ticketPayload(m){return [st.bid,MOVIES[st.movie].t,scrOf(MOVIES[st.movie],st.date),absDate(st.date),TIMES[st.t],st.sel.join(' '),Math.round(m.tot*100)/100].join('|');}
 function ticketURL(pl){return location.href.split('#')[0]+'#/t/'+enc(pl);}
 /* Picks the poster's main colour (favouring vivid, mid-bright pixels), then keeps it dark enough for white text. */
 function pickTheme(d){
@@ -415,7 +418,7 @@ function movieDetail(i,d){
   d=Math.min(DAYS,Math.max(0,+d||0));
   var f=INFO[m.t]||{},url=posterOf(m.t);
   function row(k,v){return v?'<div class="dr"><span>'+k+'</span><b>'+v+'</b></div>':'';}
-  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/movies" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><h1 style="margin-top:14px">'+m.t+'</h1><div class="muted" style="margin-bottom:18px">'+m.m+' &middot; '+m.s+'</div>';
+  var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/movies" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><h1 style="margin-top:14px">'+m.t+'</h1><div class="muted" style="margin-bottom:18px">'+m.m+' &middot; '+scrNames(m)+'</div>';
   h+='<div class="drs">'+row('Release date',f.rel)+row('Runtime',f.run)+row('Certificate',f.cert)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
   if(!movieLive(m)){
     h+='<div class="muted" style="margin:22px 0">No shows are scheduled for this movie right now.</div></div>';
@@ -452,7 +455,7 @@ function qrSVG(t){var q=qrcode(0,'L');q.addData(t);q.make();return q.createSvgTa
 function inr(n){return '₹'+(n%1===0?n:n.toFixed(2));}
 function priceOf(sc){return PRICES[sc]||260;}
 function priceNote(){return Object.keys(PRICES).map(function(k){return k+' &#8377;'+PRICES[k];}).join(', ');}
-function money(){var n=st.sel.length,sub=n*priceOf(MOVIES[st.movie].s),fee=n*20,gst=Math.round(fee*0.18*100)/100;return {sub:sub,fee:fee,gst:gst,tot:sub+fee+gst};}
+function money(){var n=st.sel.length,sub=n*priceOf(scrOf(MOVIES[st.movie],st.date)),fee=n*20,gst=Math.round(fee*0.18*100)/100;return {sub:sub,fee:fee,gst:gst,tot:sub+fee+gst};}
 var app=document.getElementById('app');
 function $(id){return document.getElementById(id);}
 function go(h){location.hash=h;}
@@ -564,12 +567,12 @@ function nextShows(){
   all.sort(function(a,b){return a.tm-b.tm||a.j-b.j;});allT.sort(function(a,b){return a.tm-b.tm||a.j-b.j;});
   var cards='',any=false,tomorrowOnly=true;
   ['EPIQ 1','EPIQ 2','COSMIQ'].forEach(function(sc){
-    var mine=all.filter(function(x){return x.m.s===sc;}),mineT=allT.filter(function(x){return x.m.s===sc;});
+    var mine=all.filter(function(x){return scrOf(x.m,0)===sc;}),mineT=allT.filter(function(x){return scrOf(x.m,Math.min(1,DAYS))===sc;});
     var x=mine.filter(function(y){return y.tm>nm;})[0],tom=false;
     if(!x){x=mineT[0];tom=true;if(!x)return;}else tomorrowOnly=false;
     any=true;
     var left=x.tm-nm,tag=tom?'Tomorrow':(left<=120?'Next &middot; in '+(left>=60?Math.floor(left/60)+' h '+left%60+' min':left+' min'):'Next');
-    cards+='<a class="show" href="#/book/'+x.j+'/'+x.i+(tom&&DAYS>=1?'/1':'')+'" style="border-color:#FF5A4E"><img class="sp" src="'+posterOf(x.m.t)+'" alt="" style="object-position:'+(x.m.pos||'50% 50%')+'" onerror="this.remove()"><div class="si"><div style="color:#FF5A4E;font-size:12px;font-weight:600;margin-bottom:4px">'+tag+'</div><div class="t">'+TIMES[x.i]+'</div><div style="font-weight:600;margin-top:6px">'+x.m.t+'</div><div class="muted" style="font-size:13px;margin-top:2px">'+x.m.s+'</div></div></a>';
+    cards+='<a class="show" href="#/book/'+x.j+'/'+x.i+(tom&&DAYS>=1?'/1':'')+'" style="border-color:#FF5A4E"><img class="sp" src="'+posterOf(x.m.t)+'" alt="" style="object-position:'+(x.m.pos||'50% 50%')+'" onerror="this.remove()"><div class="si"><div style="color:#FF5A4E;font-size:12px;font-weight:600;margin-bottom:4px">'+tag+'</div><div class="t">'+TIMES[x.i]+'</div><div style="font-weight:600;margin-top:6px">'+x.m.t+'</div><div class="muted" style="font-size:13px;margin-top:2px">'+sc+'</div></div></a>';
   });
   if(!any)return '<div class="muted" style="grid-column:1/-1;font-size:14px">No shows are scheduled right now.</div>';
   return '<div class="muted" style="grid-column:1/-1;font-size:14px">'+(tomorrowOnly?'No more shows today. First show on each screen tomorrow:':'Now '+d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})+'. Next show on each screen:')+'</div>'+cards;
@@ -583,7 +586,7 @@ function heroInit(){
   function show(i){
     cur=(i+n)%n;var gi=live[cur],m=MOVIES[gi];
     $('hT').textContent=m.t;
-    $('hM').innerHTML=m.m+' &middot; '+m.s;
+    $('hM').innerHTML=m.m+' &middot; '+scrNames(m);
     var tl0=tf(m,0);
     $('hX').textContent=tl0.length?'Today: '+tl0.map(function(i){return TIMES[i];}).join(', '):'No shows today. See other days.';
     $('hB').href=tl0.length?'#/book/'+gi+'/'+firstOpen(m,0):'#/movie/'+gi;
@@ -625,8 +628,8 @@ function seats(){
     return;
   }
   h+='<div class="chips" style="margin-top:8px">';
-  tl1.length&&TIMES.forEach(function(t,i){if(tl1.indexOf(i)<0)return;var pst=isPast(st.date,i);h+='<button class="chip'+(st.t===i?' on':'')+'" data-t="'+i+'"'+(pst?' disabled style="opacity:.4;cursor:not-allowed"':'')+'><b>'+t+'</b><small>'+(pst?'Started':mv.s)+'</small></button>';});
-  h+='</div><div class="title">'+mv.s+' &middot; '+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; &#8377;'+priceOf(mv.s)+' per seat <span style="color:#717171;font-weight:400">(demo price)</span></div><div class="hintx">Tap seats to select (up to '+MAXSEL+'). Swipe sideways to see all.</div><div class="map"><div class="inner">';
+  tl1.length&&TIMES.forEach(function(t,i){if(tl1.indexOf(i)<0)return;var pst=isPast(st.date,i);h+='<button class="chip'+(st.t===i?' on':'')+'" data-t="'+i+'"'+(pst?' disabled style="opacity:.4;cursor:not-allowed"':'')+'><b>'+t+'</b><small>'+(pst?'Started':scrOf(mv,st.date))+'</small></button>';});
+  h+='</div><div class="title">'+scrOf(mv,st.date)+' &middot; '+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; &#8377;'+priceOf(scrOf(mv,st.date))+' per seat <span style="color:#717171;font-weight:400">(demo price)</span></div><div class="hintx">Tap seats to select (up to '+MAXSEL+'). Swipe sideways to see all.</div><div class="map"><div class="inner">';
   L.forEach(function(Lr,r){
     h+='<div class="row" style="margin-bottom:'+(r===8?30:7)+'px"><div class="rl">'+Lr+'</div>';
     for(var n=1;n<=26;n++){var id=Lr+n,t=booked(id),on=st.sel.indexOf(id)>=0,sd=SDR.indexOf(id)>=0,best=!t&&r>=4&&r<=9&&n>=9&&n<=18;
@@ -640,7 +643,7 @@ function seats(){
   $('go').onclick=function(){go('#/pay');};
   var n=st.sel.length,sr=stranded(),g=sr.length>0;
   $('sl').textContent=n?n+' seat'+(n>1?'s':'')+': '+st.sel.join(', '):'Pick up to '+MAXSEL+' seats';
-  $('sub').textContent=inr(n*priceOf(mv.s));
+  $('sub').textContent=inr(n*priceOf(scrOf(mv,st.date)));
   var w=$('warn');w.style.display=g?'block':'none';if(g)w.textContent='Seat '+sr.join(', ')+' would be left alone (yellow). Pick it too, or shift your seats by one, so no seat is left on its own.';
   $('go').disabled=!n||g;
   $('v3').href='#/view/epiq1/'+(n?st.sel[0]:'H8');
@@ -666,15 +669,15 @@ window.addEventListener('message',function(e){
 function pay(){
   var m=money();
   if(!st.sel.length){go('#/book');return;}
-  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="pay">Seats held for 08:00. Complete payment before the timer ends. (Demo)</div><div class="card"><div class="D" style="font-weight:900;font-size:26px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div class="sub">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+MOVIES[st.movie].s+'</div><div class="line"><span>Seats</span><b>'+st.sel.join(', ')+'</b></div><div class="line"><span>Tickets ('+st.sel.length+' &times; &#8377;'+priceOf(MOVIES[st.movie].s)+')</span><span>'+inr(m.sub)+'</span></div><div class="line"><span>Convenience fee</span><span>'+inr(m.fee)+'</span></div><div class="line"><span>GST on fee</span><span>'+inr(m.gst)+'</span></div><div class="line grand"><span>TOTAL</span><span>'+inr(m.tot)+'</span></div><button class="btn" id="pb" style="margin-top:14px">PAY (DEMO, NO MONEY)</button><button class="out" id="pf">Simulate a failed payment</button><button class="out" id="pk" style="border-color:#717171;color:#222222">Back to seats</button></div></div>';
-  $('pb').onclick=function(){var m2=money(),mv=MOVIES[st.movie],di=dayInfo(st.date);st.bid='VES-DEMO-'+(1000+Math.floor(Math.random()*9000));var b=bookings();b.push({id:st.bid,movie:mv.t,screen:mv.s,dkey:di.key,dfull:di.full,t:st.t,time:TIMES[st.t],seats:st.sel.slice(),total:m2.tot,at:new Date().toLocaleString('en-IN'),cancelled:false});saveBookings(b);go('#/ticket');};$('pf').onclick=function(){go('#/failed');};$('pk').onclick=function(){go('#/book');};
+  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="pay">Seats held for 08:00. Complete payment before the timer ends. (Demo)</div><div class="card"><div class="D" style="font-weight:900;font-size:26px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div class="sub">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+scrOf(MOVIES[st.movie],st.date)+'</div><div class="line"><span>Seats</span><b>'+st.sel.join(', ')+'</b></div><div class="line"><span>Tickets ('+st.sel.length+' &times; &#8377;'+priceOf(scrOf(MOVIES[st.movie],st.date))+')</span><span>'+inr(m.sub)+'</span></div><div class="line"><span>Convenience fee</span><span>'+inr(m.fee)+'</span></div><div class="line"><span>GST on fee</span><span>'+inr(m.gst)+'</span></div><div class="line grand"><span>TOTAL</span><span>'+inr(m.tot)+'</span></div><button class="btn" id="pb" style="margin-top:14px">PAY (DEMO, NO MONEY)</button><button class="out" id="pf">Simulate a failed payment</button><button class="out" id="pk" style="border-color:#717171;color:#222222">Back to seats</button></div></div>';
+  $('pb').onclick=function(){var m2=money(),mv=MOVIES[st.movie],di=dayInfo(st.date);st.bid='VES-DEMO-'+(1000+Math.floor(Math.random()*9000));var b=bookings();b.push({id:st.bid,movie:mv.t,screen:scrOf(mv,st.date),dkey:di.key,dfull:di.full,t:st.t,time:TIMES[st.t],seats:st.sel.slice(),total:m2.tot,at:new Date().toLocaleString('en-IN'),cancelled:false});saveBookings(b);go('#/ticket');};$('pf').onclick=function(){go('#/failed');};$('pk').onclick=function(){go('#/book');};
 }
 function ticket(){
   if(!st.sel.length){go('#/book');return;}
   if(!st.bid){go('#/pay');return;}
   var m=money(),pl=ticketPayload(m),turl=ticketURL(pl);
   var q=qrSVG(turl);
-  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="tick"><div class="D" style="font-weight:900;font-size:30px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div style="font-size:13px;margin:4px 0 10px">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+MOVIES[st.movie].s+' &middot; Tamil</div><div>Seats <b>'+st.sel.join(', ')+'</b></div><div style="border-top:2px dashed #FFFFFF;margin:14px -16px"></div><div style="display:flex;gap:16px;align-items:center"><div class="qrb">'+q+'</div><div style="font-size:12px;line-height:1.5">Booking ID<br><b style="font-size:16px">'+st.bid+'</b><br>Cancel until 2 hours before the show</div></div><div style="font-size:12px;margin-top:10px;color:#717171">Scan this code with your phone camera to open your ticket with the movie poster and details. <a href="#/t/'+enc(pl)+'">Open ticket</a></div><div style="margin-top:12px;background:#FF5A4E;padding:6px 10px;font-size:12px;font-weight:700">DEMO TICKET: not valid for entry. No real money was charged.</div></div><div style="max-width:420px;margin:0 auto"><button class="btn" id="hm" style="font-size:16px;margin-top:10px">&larr; Back to home</button><button class="out" id="cx">Cancel booking</button></div></div>';
+  app.innerHTML='<div class="bk" style="padding-top:16px"><div class="tick"><div class="D" style="font-weight:900;font-size:30px">'+MOVIES[st.movie].t.toUpperCase()+'</div><div style="font-size:13px;margin:4px 0 10px">'+dayInfo(st.date).full+', '+TIMES[st.t]+' &middot; '+scrOf(MOVIES[st.movie],st.date)+' &middot; Tamil</div><div>Seats <b>'+st.sel.join(', ')+'</b></div><div style="border-top:2px dashed #FFFFFF;margin:14px -16px"></div><div style="display:flex;gap:16px;align-items:center"><div class="qrb">'+q+'</div><div style="font-size:12px;line-height:1.5">Booking ID<br><b style="font-size:16px">'+st.bid+'</b><br>Cancel until 2 hours before the show</div></div><div style="font-size:12px;margin-top:10px;color:#717171">Scan this code with your phone camera to open your ticket with the movie poster and details. <a href="#/t/'+enc(pl)+'">Open ticket</a></div><div style="margin-top:12px;background:#FF5A4E;padding:6px 10px;font-size:12px;font-weight:700">DEMO TICKET: not valid for entry. No real money was charged.</div></div><div style="max-width:420px;margin:0 auto"><button class="btn" id="hm" style="font-size:16px;margin-top:10px">&larr; Back to home</button><button class="out" id="cx">Cancel booking</button></div></div>';
   $('hm').onclick=function(){st.sel=[];st.bid=null;go('#/');};
   $('cx').onclick=function(){var b=bookings();b.forEach(function(x){if(x.id===st.bid)x.cancelled=true;});saveBookings(b);st.sel=[];st.bid=null;go('#/');};
 }
@@ -787,10 +790,10 @@ function admin(view){
   if(adminDay>DAYS)adminDay=0;
   if(adminView==='dashboard'){
     var rev=bk.reduce(function(a,x){return a+x.total;},0),sold=bk.reduce(function(a,x){return a+x.seats.length;},0),open=orders().filter(function(x){return !x.done;}).length;
-    var rows='';MOVIES.forEach(function(m,j){tf(m,0).forEach(function(t){rows+='<div class="r"><div style="font-weight:700">'+m.t+'</div><div>'+m.s+'</div><div>'+TIMES[t]+(isPast(0,t)?' <span style="color:#717171;font-size:12px">(started)</span>':'')+'</div>'+bar(occ(j,0,t))+'</div>';});});
+    var rows='';MOVIES.forEach(function(m,j){tf(m,0).forEach(function(t){rows+='<div class="r"><div style="font-weight:700">'+m.t+'</div><div>'+scrOf(m,0)+'</div><div>'+TIMES[t]+(isPast(0,t)?' <span style="color:#717171;font-size:12px">(started)</span>':'')+'</div>'+bar(occ(j,0,t))+'</div>';});});
     body='<h1>Today at a glance</h1><div class="kp"><div>Bookings<b>'+bk.length+'</b></div><div>Tickets sold<b>'+sold+'</b></div><div>Revenue (demo)<b>'+inr(rev)+'</b></div><div>Snack orders waiting<b>'+open+'</b></div></div>'+H2+'Shows today</h2><div class="tb"><div class="r h"><div>Movie</div><div>Screen</div><div>Time</div><div>Seats filled</div></div>'+(rows||'<div class="r" style="color:#717171">No shows are scheduled.</div>')+'</div>'+H2+'Latest bookings</h2>'+bookingRows(5)+H2+'Latest snack orders</h2>'+snackRows(3);
   }else if(adminView==='shows'){
-    body='<h1>Shows</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Pick a date, then tick the times each movie plays on <b>that date only</b>. Untick every time to remove a movie from that date. The percentage is how full the show is.</p>'+dateChips()+'<div class="tb"><div class="r h"><div>Movie</div><div>Screen</div>'+TIMES.map(function(t){return '<div>'+t+'</div>';}).join('')+'</div>'+MOVIES.map(function(m,j){if(!inRng(m,dayInfo(adminDay).key))return '';return '<div class="r"><div style="font-weight:700">'+m.t+(inRng(m,dayInfo(adminDay).key)?'':'<div style="font-weight:400;font-size:12px;color:#717171">Not playing on this date</div>')+'</div><div>'+m.s+'</div>'+TIMES.map(function(t,i){var on=tf(m,adminDay).indexOf(i)>=0;return '<div><label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" class="sl" data-j="'+j+'" data-i="'+i+'"'+(on?' checked':'')+(inRng(m,dayInfo(adminDay).key)?'':' disabled')+'>'+(on?'<span style="font-size:13px;color:#717171">'+occ(j,adminDay,i)+'%</span>':'')+'</label></div>';}).join('')+'</div>';}).join('')+'</div><div class="msg" id="am2"></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px"><button type="button" id="cpd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Use this date for every day</button><button type="button" id="rsd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset this date</button><button type="button" id="rs" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset to the original schedule</button></div><p style="color:#717171;font-size:13px;margin-top:10px">Two movies on the same screen cannot play at the same time. Existing bookings stay when you remove a show.</p>'+runHtml();
+    body='<h1>Shows</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Pick a date, then tick the times each movie plays on <b>that date only</b>. Untick every time to remove a movie from that date. Use the Screen box to play a movie on a different screen on that date only. The percentage is how full the show is.</p>'+dateChips()+'<div class="tb"><div class="r h"><div>Movie</div><div>Screen</div>'+TIMES.map(function(t){return '<div>'+t+'</div>';}).join('')+'</div>'+MOVIES.map(function(m,j){if(!inRng(m,dayInfo(adminDay).key))return '';return '<div class="r"><div style="font-weight:700">'+m.t+(inRng(m,dayInfo(adminDay).key)?'':'<div style="font-weight:400;font-size:12px;color:#717171">Not playing on this date</div>')+'</div><div><select class="sd" data-j="'+j+'" style="min-height:34px;padding:0 4px;border:1px solid #C9BFC6;background:#fff;max-width:104px">'+SCREENS3.map(function(x){return '<option'+(x===scrOf(m,adminDay)?' selected':'')+'>'+x+'</option>';}).join('')+'</select></div>'+TIMES.map(function(t,i){var on=tf(m,adminDay).indexOf(i)>=0;return '<div><label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" class="sl" data-j="'+j+'" data-i="'+i+'"'+(on?' checked':'')+(inRng(m,dayInfo(adminDay).key)?'':' disabled')+'>'+(on?'<span style="font-size:13px;color:#717171">'+occ(j,adminDay,i)+'%</span>':'')+'</label></div>';}).join('')+'</div>';}).join('')+'</div><div class="msg" id="am2"></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px"><button type="button" id="cpd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Use this date for every day</button><button type="button" id="rsd" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset this date</button><button type="button" id="rs" style="min-height:40px;padding:0 16px;border:1px solid #222;background:#fff;border-radius:6px">Reset to the original schedule</button></div><p style="color:#717171;font-size:13px;margin-top:10px">Two movies on the same screen cannot play at the same time. Existing bookings stay when you remove a show.</p>'+runHtml();
   }else if(adminView==='movies'){
     body=moviesAdminHtml();
   }else if(adminView==='upcoming'){
@@ -818,12 +821,22 @@ function admin(view){
   app.querySelectorAll('.sl').forEach(function(c){c.onchange=function(){
     var j=+c.getAttribute('data-j'),i=+c.getAttribute('data-i'),m=MOVIES[j],box=$('am2'),cur=tf(m,adminDay).slice();
     if(c.checked){
-      var clash=MOVIES.filter(function(o,k){return k!==j&&o.s===m.s&&tf(o,adminDay).indexOf(i)>=0;})[0];
-      if(clash){c.checked=false;box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Clash: '+m.s+' already shows '+clash.t+' at '+TIMES[i]+' on this date.';return;}
+      var clash=MOVIES.filter(function(o,k){return k!==j&&scrOf(o,adminDay)===scrOf(m,adminDay)&&tf(o,adminDay).indexOf(i)>=0;})[0];
+      if(clash){c.checked=false;box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Clash: '+scrOf(m,adminDay)+' already shows '+clash.t+' at '+TIMES[i]+' on this date.';return;}
       cur.push(i);cur.sort();
     }else{cur=cur.filter(function(x){return x!==i;});}
     var key=dayInfo(adminDay).key;CFG.dayt=CFG.dayt||{};CFG.dayt[key]=CFG.dayt[key]||{};
     if(cur.join()===m.times.join())delete CFG.dayt[key][m.t];else CFG.dayt[key][m.t]=cur;
+    saveCfg();again();};});
+  app.querySelectorAll('.sd').forEach(function(e){e.onchange=function(){
+    var j=+e.getAttribute('data-j'),m=MOVIES[j],key=dayInfo(adminDay).key,ns=e.value,box=$('am2'),old=scrOf(m,adminDay),clash=null;
+    function bad(t){e.value=old;box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent=t;}
+    tf(m,adminDay).forEach(function(i){MOVIES.forEach(function(o,k){if(k!==j&&scrOf(o,adminDay)===ns&&tf(o,adminDay).indexOf(i)>=0&&!clash)clash={o:o,t:i};});});
+    if(clash){bad('Clash: '+ns+' already shows '+clash.o.t+' at '+TIMES[clash.t]+' on this date. Pick another screen or change that movie first.');return;}
+    var nb=bookings().filter(function(b){return !b.cancelled&&b.movie===m.t&&b.dkey===key;}).length;
+    if(nb){bad(m.t+' already has '+nb+' booking'+(nb>1?'s':'')+' on this date. Cancel them in Bookings before moving it to another screen.');return;}
+    CFG.dscr=CFG.dscr||{};CFG.dscr[key]=CFG.dscr[key]||{};
+    if(ns===m.s)delete CFG.dscr[key][m.t];else CFG.dscr[key][m.t]=ns;
     saveCfg();again();};});
   function setRng(j,f,t){var m=MOVIES[j],box=$('am2'),old=rngOf(m);
     if(f&&t&&t<f){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='The last day must be on or after the first day.';app.querySelector('.rf[data-j="'+j+'"]').value=old.from;app.querySelector('.rt[data-j="'+j+'"]').value=old.to;return;}
@@ -846,14 +859,15 @@ function admin(view){
     say(on?'Saved. '+x.t+' will be added to '+scr+' on '+x.d+'.':'Saved. Automatic release is off for '+x.t+'.',1);
   }
   app.querySelectorAll('.au').forEach(function(e){e.onchange=function(){var r=e.parentNode;while(r&&!(r.className&&String(r.className).indexOf('ar')>=0&&r.getAttribute&&r.getAttribute('data-k')!==null))r=r.parentNode;if(r)autoSave(+r.getAttribute('data-k'));};});
-  if($('rsd'))$('rsd').onclick=function(){var key=dayInfo(adminDay).key;if(CFG.dayt)delete CFG.dayt[key];saveCfg();again();};
+  if($('rsd'))$('rsd').onclick=function(){var key=dayInfo(adminDay).key;if(CFG.dayt)delete CFG.dayt[key];if(CFG.dscr)delete CFG.dscr[key];saveCfg();again();};
   if($('cpd'))$('cpd').onclick=function(){
-    if(!confirm('Use the times of '+dayInfo(adminDay).full+' for every day? Other dates changed earlier will be replaced.'))return;
+    if(!confirm('Use the screens and times of '+dayInfo(adminDay).full+' for every day? Other dates changed earlier will be replaced.'))return;
+    MOVIES.forEach(function(m){var ns=scrOf(m,adminDay);if(ns===m.s)return;if(m.auto&&CFG.auto&&CFG.auto[m.t])CFG.auto[m.t].s=ns;else if(m.custom){(CFG.added||[]).forEach(function(a){if(a.t===m.t)a.s=ns;});}else{CFG.scr=CFG.scr||{};CFG.scr[m.t]=ns;}});
     CFG.slots=CFG.slots||{};MOVIES.forEach(function(m){var t=tf(m,adminDay).slice();m.times=t;CFG.slots[m.t]=t.slice();});
-    delete CFG.dayt;saveCfg();again();};
+    delete CFG.dayt;delete CFG.dscr;saveCfg();applyCfg();again();};
   app.querySelectorAll('.ud').forEach(function(b){b.onclick=function(){var u=upcoming().slice();u.splice(+b.getAttribute('data-k'),1);CFG.upcoming=u;saveCfg();again();};});
   if($('ua'))$('ua').onclick=function(){var t=$('ut').value.trim(),d=$('ud').value.trim(),box=$('am2');if(!t){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Enter the movie name.';return;}var u=upcoming().slice();u.push({t:t,d:d||'Date to be announced'});CFG.upcoming=u;saveCfg();again();};
-  if($('rs'))$('rs').onclick=function(){delete CFG.slots;delete CFG.dayt;saveCfg();applyCfg();again();};
+  if($('rs'))$('rs').onclick=function(){delete CFG.slots;delete CFG.dayt;delete CFG.dscr;saveCfg();applyCfg();again();};
   if($('cl'))$('cl').onclick=function(){if(confirm('Delete all demo bookings and snack orders in this browser?')){saveBookings([]);saveOrders([]);again();}};
   function amsg(t,ok){var box=$('am2');if(!box)return;box.style.display='block';box.style.background=ok?'#E3F6E8':'#FDE3EA';box.style.border='1px solid '+(ok?'#2E9E4F':'#FF5A4E');box.textContent=t;}
   app.querySelectorAll('.sv').forEach(function(e){e.onchange=function(){var k=e.getAttribute('data-h'),o=hallShow(k);o.secs=+e.value;setHall(k,o);amsg('Saved.',1);};});
@@ -878,7 +892,7 @@ function admin(view){
     fr.readAsDataURL(f);};
   app.querySelectorAll('.ms').forEach(function(e){e.onchange=function(){
     var j=+e.getAttribute('data-j'),m=MOVIES[j],ns=e.value,clash=null;
-    for(var d0=0;d0<=DAYS;d0++)tf(m,d0).forEach(function(t){MOVIES.forEach(function(o,k){if(k!==j&&o.s===ns&&tf(o,d0).indexOf(t)>=0&&!clash)clash={o:o,t:t};});});
+    for(var d0=0;d0<=DAYS;d0++)(hasOv(m,d0)?[]:tf(m,d0)).forEach(function(t){MOVIES.forEach(function(o,k){if(k!==j&&scrOf(o,d0)===ns&&tf(o,d0).indexOf(t)>=0&&!clash)clash={o:o,t:t};});});
     if(clash){e.value=m.s;amsg('Clash: '+ns+' already shows '+clash.o.t+' at '+TIMES[clash.t]+'. Change that movie first.');return;}
     var n=activeBookings(m.t);
     if(n){e.value=m.s;amsg(m.t+' has '+n+' upcoming booking'+(n>1?'s':'')+'. Cancel them in Bookings before moving it to another screen.');return;}
