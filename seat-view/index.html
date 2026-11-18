@@ -198,12 +198,33 @@ function signTexF(txt){
   x.font='900 150px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(txt,320,125);
   return new THREE.CanvasTexture(c);
 }
+var FILM=[['Ramayanam','Tamil · U'],['Jailer 2','Tamil · UA16+'],['John Doe','Tamil · UA16+'],['Scene','Tamil · UA16+']],filmImgs=[],filmCur=0,filmPrev=-1,filmFade=1,filmLast=0,filmCtx=null,filmTexRef=null;
+function filmDraw(i,a){
+  var g=filmCtx,W=1024,H=540,im=filmImgs[i];g.globalAlpha=a;
+  if(!im||!im.complete||!im.naturalWidth){g.fillStyle='#14141a';g.fillRect(0,0,W,H);g.globalAlpha=1;return;}
+  // soft blurred backdrop (small canvas scaled up, works in every browser)
+  var sm=document.createElement('canvas');sm.width=32;sm.height=17;var sg=sm.getContext('2d');
+  var cr=Math.max(32/im.naturalWidth,17/im.naturalHeight);sg.drawImage(im,(32-im.naturalWidth*cr)/2,(17-im.naturalHeight*cr)/2,im.naturalWidth*cr,im.naturalHeight*cr);
+  g.imageSmoothingEnabled=true;g.drawImage(sm,0,0,W,H);g.fillStyle='rgba(0,0,0,0.45)';g.fillRect(0,0,W,H);
+  var ph=H-60,pw=ph*im.naturalWidth/im.naturalHeight,px=W/2-pw-30;
+  g.shadowColor='rgba(0,0,0,0.7)';g.shadowBlur=30;g.drawImage(im,px,30,pw,ph);g.shadowBlur=0;
+  g.fillStyle='#fff';g.textAlign='left';g.textBaseline='middle';
+  g.font='900 56px sans-serif';g.fillText(FILM[i][0].toUpperCase(),W/2+10,H/2-20,W/2-40);
+  g.font='600 26px sans-serif';g.fillStyle='rgba(255,255,255,0.8)';g.fillText(FILM[i][1],W/2+10,H/2+38);
+  g.fillStyle='#FF5A4E';g.font='700 22px sans-serif';g.fillText('NOW SHOWING',W/2+10,H/2+84);
+  g.globalAlpha=1;
+}
+function filmTick(now){
+  if(!filmCtx)return;
+  if(!filmLast)filmLast=now;
+  if(filmFade>=1&&now-filmLast>4000){filmPrev=filmCur;filmCur=(filmCur+1)%FILM.length;filmFade=0;filmLast=now;}
+  if(filmFade<1){filmFade=Math.min(1,filmFade+0.025);filmDraw(filmCur,1);if(filmPrev>=0&&filmFade<1)filmDraw(filmPrev,1-filmFade);filmTexRef.needsUpdate=true;}
+}
 function filmTex(){
-  var c=document.createElement('canvas');c.width=1024;c.height=540;var g=c.getContext('2d');
-  g.fillStyle='#14141a';g.fillRect(0,0,1024,540);
-  var t=new THREE.CanvasTexture(c);t.anisotropy=4;
-  var im=new Image();im.onload=function(){g.drawImage(im,0,0,1024,540);t.needsUpdate=true;};
-  im.src='screen-posters.jpg';
+  var c=document.createElement('canvas');c.width=1024;c.height=540;filmCtx=c.getContext('2d');
+  filmCtx.fillStyle='#14141a';filmCtx.fillRect(0,0,1024,540);
+  var t=new THREE.CanvasTexture(c);t.anisotropy=4;filmTexRef=t;var n=0;
+  FILM.forEach(function(f,k){var im=new Image();im.onload=function(){n++;if(k===0||n===FILM.length){filmDraw(filmCur,1);t.needsUpdate=true;}};im.src='../posters/'+f[0].toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg';filmImgs[k]=im;});
   return t;
 }
 function blankTex(){
@@ -539,7 +560,7 @@ resize();
     if(e.data.type==='seat-view:select'){if(e.data.hall&&HALLS[e.data.hall]&&e.data.hall!==curKey)showHall(e.data.hall);pick(e.data.seat);}
   });
 })();
-(function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
+(function loop(t){requestAnimationFrame(loop);filmTick(t||0);renderer.render(scene,camera);})();
 
 // ---- maximise / minimise (full screen where the browser allows it, otherwise the view just fills the page) ----
 (function(){
