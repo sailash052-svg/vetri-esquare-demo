@@ -673,9 +673,30 @@ function bookingRows(limit){
   return '<div class="tb"><div class="r h"><div>Booking</div><div>Movie</div><div>Show</div><div>Seats</div><div>Total</div><div>Status</div></div>'+b.map(function(x){
     return '<div class="r" style="'+(x.cancelled?'opacity:.5':'')+'"><div style="font-weight:700">'+x.id+'<div style="font-weight:400;font-size:12px;color:#717171">'+x.at+'</div></div><div>'+x.movie+'<div style="font-size:12px;color:#717171">'+x.screen+'</div></div><div>'+x.dfull+'<div style="font-size:12px;color:#717171">'+x.time+'</div></div><div>'+x.seats.join(', ')+'</div><div>'+inr(x.total)+'</div><div>'+(x.cancelled?'Cancelled':'<button class="bc" data-id="'+x.id+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">Cancel</button>')+'</div></div>';}).join('')+'</div>';
 }
+var HALL3=[['epiq1','EPIQ 1'],['epiq2','EPIQ 2'],['cosmiq','COSMIQ']],BUILT=[['batman','The Batman'],['john-wick','John Wick'],['jack-sparrow','Pirates of the Caribbean'],['interstellar','Interstellar'],['rajinikanth','Rajinikanth']],SECS=[2,3,4,5,6,8,10,15,20,30];
+function picLib(){var l={};BUILT.forEach(function(b){l[b[0]]={id:b[0],n:b[1],u:'film/'+b[0]+'-v2.jpg'};});(CFG.pics||[]).forEach(function(p){l[p.id]={id:p.id,n:p.n,u:p.u,c:1};});return l;}
+function hallShow(k){var sc=(CFG.screens||{})[k]||{};return {ids:(sc.ids||BUILT.map(function(b){return b[0];})).slice(),secs:sc.secs||4};}
+function setHall(k,o){CFG.screens=CFG.screens||{};CFG.screens[k]=o;saveCfg();}
+function screenShowHtml(){
+  var lib=picLib(),H2='<h2 style="font-weight:700">',btn='min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;color:#222;margin:0;font-weight:600;border-radius:6px;cursor:pointer';
+  var out='<h1>Screen slideshow</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Choose which pictures play on the screen of each hall in the 3D view, their order, and how many seconds each stays. Changes apply to the 3D view in this browser (demo).</p><div class="msg" id="am2"></div>';
+  HALL3.forEach(function(hh){
+    var cfg=hallShow(hh[0]),rest=Object.keys(lib).filter(function(i){return cfg.ids.indexOf(i)<0;});
+    out+='<div class="form" style="margin-bottom:16px;max-width:640px"><h2 style="font-weight:700;margin:0 0 10px">'+hh[1]+'</h2>';
+    out+='<label>Seconds per picture</label><select class="sv" data-h="'+hh[0]+'" style="max-width:160px">'+SECS.map(function(n){return '<option value="'+n+'"'+(n===cfg.secs?' selected':'')+'>'+n+' seconds</option>';}).join('')+'</select>';
+    out+='<div style="margin-top:12px">'+(cfg.ids.length?cfg.ids.map(function(id,k){var x=lib[id];if(!x)return '';return '<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #E3DCE0"><img src="'+esc(x.u)+'" alt="" style="width:80px;height:42px;object-fit:cover;background:#eee"><div style="flex:1;font-weight:700">'+(k+1)+'. '+esc(x.n)+'</div><button class="sm" data-h="'+hh[0]+'" data-k="'+k+'" data-d="-1" style="'+btn+'"'+(k===0?' disabled':'')+' aria-label="Move up">&uarr;</button><button class="sm" data-h="'+hh[0]+'" data-k="'+k+'" data-d="1" style="'+btn+'"'+(k===cfg.ids.length-1?' disabled':'')+' aria-label="Move down">&darr;</button><button class="sr" data-h="'+hh[0]+'" data-k="'+k+'" style="'+btn+'">Remove</button></div>';}).join(''):'<div style="color:#717171;padding:8px 0">No pictures. This screen will show a plain dark screen.</div>')+'</div>';
+    if(rest.length)out+='<div style="display:flex;gap:10px;margin-top:10px;align-items:end"><div style="flex:1"><label>Add a picture</label><select class="sp2" data-h="'+hh[0]+'">'+rest.map(function(i){return '<option value="'+i+'">'+esc(lib[i].n)+'</option>';}).join('')+'</select></div><button class="sa" data-h="'+hh[0]+'" style="margin:0">Add</button></div>';
+    out+='</div>';
+  });
+  out+=H2+'Upload a new picture</h2><div class="form" style="max-width:640px"><p style="margin:0 0 10px;font-size:13px;color:#717171">Use a wide picture (best 1920 &times; 1010, JPG or PNG). It is resized and kept in this browser, then you can add it to any hall above.</p><div class="fl"><div style="flex:1 1 200px"><label>Movie name</label><input id="pn" type="text" maxlength="40" placeholder="e.g. Leo"></div><div style="flex:1 1 200px"><label>Picture</label><input id="pf" type="file" accept="image/*"></div></div><button id="pu">Upload picture</button></div>';
+  var cp=CFG.pics||[];
+  if(cp.length)out+='<div class="tb" style="margin-top:14px;max-width:640px">'+cp.map(function(x,k){return '<div class="r"><div style="min-width:0"><img src="'+esc(x.u)+'" alt="" style="width:80px;height:42px;object-fit:cover;vertical-align:middle;margin-right:10px">'+esc(x.n)+'</div><div><button class="pd" data-k="'+k+'" style="'+btn+'">Delete</button></div></div>';}).join('')+'</div>';
+  out+='<div style="margin-top:14px"><button type="button" id="sdef" style="'+btn+'">Reset all screens to default</button></div>';
+  return out;
+}
 function admin(view){
   if(typeof view==='string')adminView=view;
-  var NAV=[['dashboard','Dashboard'],['shows','Shows'],['movies','Movies'],['upcoming','Coming soon'],['bookings','Bookings'],['snacks','Snack orders'],['settings','Settings'],['seats','Seat layout']];
+  var NAV=[['dashboard','Dashboard'],['shows','Shows'],['movies','Movies'],['upcoming','Coming soon'],['bookings','Bookings'],['snacks','Snack orders'],['screenshow','Screen slideshow'],['settings','Settings'],['seats','Seat layout']];
   var H2='<h2 style="font-weight:700">',bk=bookings().filter(function(x){return !x.cancelled;}),body='';
   function dateChips(){var s='<div class="chips" style="margin-bottom:14px">';for(var o=0;o<=DAYS;o++){var di=dayInfo(o);s+='<button type="button" class="chip dsel'+(adminDay===o?' on':'')+'" data-d="'+o+'"><b>'+di.label+'</b><small>'+di.sub+'</small></button>';}return s+'</div>';}
   if(adminDay>DAYS)adminDay=0;
@@ -694,6 +715,8 @@ function admin(view){
     body='<h1>Bookings</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Every ticket paid for on the website. Cancelling a booking frees its seats.</p>'+bookingRows()+'<button type="button" id="cl" style="margin-top:16px;min-height:40px;padding:0 16px;border:1px solid #D0362B;color:#D0362B;background:#fff;border-radius:6px">Clear all demo bookings and snack orders</button>';
   }else if(adminView==='snacks'){
     body='<h1>Snack orders</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Orders placed on the website appear here with the screen and seat. Take the snacks to that seat, then press Delivered.</p>'+snackRows();
+  }else if(adminView==='screenshow'){
+    body=screenShowHtml();
   }else if(adminView==='settings'){
     body='<h1>Settings</h1><div class="form" style="max-width:480px"><div class="fl">'+Object.keys(PRICES).map(function(k){return '<div style="flex:1 1 140px"><label>'+k+' ticket price (&#8377;)</label><input class="sp" data-s="'+k+'" type="number" min="1" max="2000" value="'+PRICES[k]+'"></div>';}).join('')+'<div style="flex:1 1 100%"><label>Customers can book up to</label><select id="sd">'+[1,2,3,4,5,6,7].map(function(n){return '<option value="'+n+'"'+(n===DAYS?' selected':'')+'>'+n+' day'+(n>1?'s':'')+' ahead</option>';}).join('')+'</select></div></div><button id="ss">Save settings</button><div class="msg" id="am2"></div><div style="font-size:13px;color:#717171;margin-top:12px">Convenience fee (&#8377;20 per ticket plus GST) is fixed in this demo. Seats are held for 8 minutes and up to 10 seats can be booked at a time.</div></div>';
   }else{
@@ -719,6 +742,27 @@ function admin(view){
   if($('ua'))$('ua').onclick=function(){var t=$('ut').value.trim(),d=$('ud').value.trim(),box=$('am2');if(!t){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Enter the movie name.';return;}var u=upcoming().slice();u.push({t:t,d:d||'Date to be announced'});CFG.upcoming=u;saveCfg();again();};
   if($('rs'))$('rs').onclick=function(){delete CFG.slots;saveCfg();applyCfg();again();};
   if($('cl'))$('cl').onclick=function(){if(confirm('Delete all demo bookings and snack orders in this browser?')){saveBookings([]);saveOrders([]);again();}};
+  function amsg(t,ok){var box=$('am2');if(!box)return;box.style.display='block';box.style.background=ok?'#E3F6E8':'#FDE3EA';box.style.border='1px solid '+(ok?'#2E9E4F':'#FF5A4E');box.textContent=t;}
+  app.querySelectorAll('.sv').forEach(function(e){e.onchange=function(){var k=e.getAttribute('data-h'),o=hallShow(k);o.secs=+e.value;setHall(k,o);amsg('Saved.',1);};});
+  app.querySelectorAll('.sm').forEach(function(e){e.onclick=function(){var k=e.getAttribute('data-h'),o=hallShow(k),i=+e.getAttribute('data-k'),j=i+(+e.getAttribute('data-d'));if(j<0||j>=o.ids.length)return;var t=o.ids[i];o.ids[i]=o.ids[j];o.ids[j]=t;setHall(k,o);again();};});
+  app.querySelectorAll('.sr').forEach(function(e){e.onclick=function(){var k=e.getAttribute('data-h'),o=hallShow(k);o.ids.splice(+e.getAttribute('data-k'),1);setHall(k,o);again();};});
+  app.querySelectorAll('.sa').forEach(function(e){e.onclick=function(){var k=e.getAttribute('data-h'),o=hallShow(k),sel=app.querySelector('.sp2[data-h="'+k+'"]');if(sel&&sel.value){o.ids.push(sel.value);setHall(k,o);again();}};});
+  app.querySelectorAll('.pd').forEach(function(e){e.onclick=function(){var pics=(CFG.pics||[]).slice(),x=pics.splice(+e.getAttribute('data-k'),1)[0];CFG.pics=pics;if(x&&CFG.screens)Object.keys(CFG.screens).forEach(function(h){var o=CFG.screens[h];if(o&&o.ids)o.ids=o.ids.filter(function(i){return i!==x.id;});});saveCfg();again();};});
+  if($('sdef'))$('sdef').onclick=function(){delete CFG.screens;saveCfg();again();};
+  if($('pu'))$('pu').onclick=function(){
+    var n=$('pn').value.trim(),f=$('pf').files[0];
+    if(!n){amsg('Enter the movie name.');return;}
+    if(!f||!/^image\//.test(f.type)){amsg('Choose a picture file.');return;}
+    if((CFG.pics||[]).length>=6){amsg('You can keep up to 6 uploaded pictures. Delete one first.');return;}
+    var fr=new FileReader();
+    fr.onload=function(){var im=new Image();im.onload=function(){
+      var w=Math.min(1280,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth),c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);
+      var u=c.toDataURL('image/jpeg',0.82),pics=(CFG.pics||[]).slice(),id='u'+Date.now();pics.push({id:id,n:n,u:u});
+      var old=CFG.pics;CFG.pics=pics;
+      try{localStorage.setItem('ves_cfg',JSON.stringify(CFG));}catch(e){CFG.pics=old;amsg('This browser has no room to keep that picture. Try a smaller one or delete an uploaded picture.');return;}
+      again();};
+      im.onerror=function(){amsg('That file could not be read as a picture.');};im.src=fr.result;};
+    fr.readAsDataURL(f);};
   if($('ss'))$('ss').onclick=function(){
     var box=$('am2'),np={},bad=false;box.style.display='block';
     app.querySelectorAll('.sp').forEach(function(i){var v=+i.value;if(!(v>=1&&v<=2000))bad=true;np[i.getAttribute('data-s')]=v;});

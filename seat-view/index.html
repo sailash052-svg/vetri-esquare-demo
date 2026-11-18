@@ -198,18 +198,30 @@ function signTexF(txt){
   x.font='900 150px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(txt,320,125);
   return new THREE.CanvasTexture(c);
 }
-var FILM=[['batman',0.5],['john-wick',0.5],['jack-sparrow',0.15],['interstellar',1],['rajinikanth',0.5]],filmImgs=[],filmCur=0,filmPrev=-1,filmFade=1,filmLast=0,filmCtx=null,filmTexRef=null;
+var FILM_LIB=[['batman','The Batman',0.5],['john-wick','John Wick',0.5],['jack-sparrow','Pirates of the Caribbean',0.15],['interstellar','Interstellar',1],['rajinikanth','Rajinikanth',0.5]],
+FILM=[],FILMMS=4000,filmImgs=[],filmCur=0,filmPrev=-1,filmFade=1,filmLast=0,filmCtx=null,filmTexRef=null;
+function filmLoad(key){
+  var cfg={};try{cfg=JSON.parse(localStorage.getItem('ves_cfg')||'{}')||{};}catch(e){}
+  var lib={};FILM_LIB.forEach(function(f){lib[f[0]]={u:'../film/'+f[0]+'-v2.jpg',fy:f[2]};});
+  (cfg.pics||[]).forEach(function(p){lib[p.id]={u:p.u,fy:0.5};});
+  var sc=cfg.screens&&cfg.screens[key],ids=sc&&sc.ids?sc.ids:FILM_LIB.map(function(f){return f[0];});
+  FILM=ids.filter(function(i){return lib[i];}).map(function(i){return lib[i];});
+  FILMMS=Math.max(2,Math.min(60,(sc&&+sc.secs)||4))*1000;
+  filmCur=0;filmPrev=-1;filmFade=1;filmLast=0;
+  filmImgs=FILM.map(function(f,k){var im=new Image();im.onload=function(){if(k===filmCur&&filmFade>=1){filmDraw(k,1);filmTexRef.needsUpdate=true;}};im.src=f.u;return im;});
+}
 function filmDraw(i,a){
   var g=filmCtx,W=g.canvas.width,H=g.canvas.height,im=filmImgs[i];g.globalAlpha=a;
+  if(!FILM.length){g.fillStyle='#14141a';g.fillRect(0,0,W,H);g.globalAlpha=1;return;}
   if(!im||!im.complete||!im.naturalWidth){g.fillStyle='#14141a';g.fillRect(0,0,W,H);g.globalAlpha=1;return;}
   // fill the whole screen with the picture (cover), no backdrop or text
   var iw=im.naturalWidth,ih=im.naturalHeight,sc=Math.max(W/iw,H/ih),cw=W/sc,ch=H/sc;
-  g.drawImage(im,(iw-cw)/2,(ih-ch)*FILM[i][1],cw,ch,0,0,W,H);g.globalAlpha=1;
+  g.drawImage(im,(iw-cw)/2,(ih-ch)*FILM[i].fy,cw,ch,0,0,W,H);g.globalAlpha=1;
 }
 function filmTick(now){
-  if(!filmCtx)return;
+  if(!filmCtx||FILM.length<2)return;
   if(!filmLast)filmLast=now;
-  if(filmFade>=1&&now-filmLast>4000){filmPrev=filmCur;filmCur=(filmCur+1)%FILM.length;filmFade=0;filmLast=now;}
+  if(filmFade>=1&&now-filmLast>FILMMS){filmPrev=filmCur;filmCur=(filmCur+1)%FILM.length;filmFade=0;filmLast=now;}
   if(filmFade<1){filmFade=Math.min(1,filmFade+0.025);filmDraw(filmCur,1);if(filmPrev>=0&&filmFade<1)filmDraw(filmPrev,1-filmFade);filmTexRef.needsUpdate=true;}
 }
 function filmShape(asp){var c=filmCtx.canvas,h=Math.round(1280/asp);if(c.height!==h){c.height=h;}filmDraw(filmCur,1);filmTexRef.needsUpdate=true;}
@@ -217,7 +229,6 @@ function filmTex(){
   var c=document.createElement('canvas');c.width=1280;c.height=674;filmCtx=c.getContext('2d');
   filmCtx.fillStyle='#14141a';filmCtx.fillRect(0,0,c.width,c.height);
   var t=new THREE.CanvasTexture(c);t.anisotropy=8;filmTexRef=t;
-  FILM.forEach(function(f,k){var im=new Image();im.onload=function(){if(k===filmCur){filmDraw(k,1);t.needsUpdate=true;}};im.src='../film/'+f[0]+'-v2.jpg';filmImgs[k]=im;});
   return t;
 }
 function blankTex(){
@@ -268,7 +279,7 @@ function buildHall(key){
   [0.3,0.65].forEach(function(f){var pl=new THREE.PointLight(TH.fill,0.55,34);pl.position.set(0,11,backZ*f);add(pl);});
 
   // screen
-  var asp=HC.screen.w/HC.screen.h;tFilm.repeat.set(1,1);tFilm.offset.set(0,0);filmShape(asp);
+  var asp=HC.screen.w/HC.screen.h;tFilm.repeat.set(1,1);tFilm.offset.set(0,0);filmLoad(curKey);filmShape(asp);
   screenMat=new THREE.MeshBasicMaterial({map:showFilm?tFilm:tBlank});
   screen=add(new THREE.Mesh(new THREE.PlaneGeometry(1,1),screenMat));
   frame=add(new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0x7d7d84})));
