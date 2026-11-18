@@ -762,8 +762,8 @@ function moviesAdminHtml(){
 }
 function runHtml(){
   var inp='min-height:36px;padding:0 6px;border:1px solid #C9BFC6;background:#fff',bs='min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;color:#222;margin:0;font-weight:600;border-radius:6px;cursor:pointer';
-  return '<h2 style="font-weight:700;margin-top:26px">Run dates</h2><p style="color:#717171;font-size:14px;margin:0 0 10px">Set the first and last day a movie plays. Outside those days it is not shown or bookable. Leave a box empty for no limit. Existing bookings stay.</p><div class="tb"><div class="r h"><div>Movie</div><div>First day</div><div>Last day</div><div></div></div>'+MOVIES.map(function(m,j){var r=rngOf(m);
-    return '<div class="r"><div style="font-weight:700">'+esc(m.t)+'</div><div><input type="date" class="rf" data-j="'+j+'" value="'+r.from+'" style="'+inp+'"></div><div><input type="date" class="rt" data-j="'+j+'" value="'+r.to+'" style="'+inp+'"></div><div><button type="button" class="rx" data-j="'+j+'" style="'+bs+'">End this movie on '+fmtKey(addKey(dayInfo(adminDay).key,-1))+'</button></div></div>';}).join('')+'</div>';
+  return '<h2 style="font-weight:700;margin-top:26px">Run dates</h2><p style="color:#717171;font-size:14px;margin:0 0 10px">Set the first and last day a movie plays. Outside those days it is not shown or bookable. Leave a box empty for no limit. Existing bookings stay.</p><div class="tb"><div class="r h"><div>Movie</div><div>First day</div><div>Last day</div></div>'+MOVIES.map(function(m,j){var r=rngOf(m);
+    return '<div class="r"><div style="font-weight:700">'+esc(m.t)+'</div><div><input type="date" class="rf" data-j="'+j+'" value="'+r.from+'" style="'+inp+'"></div><div><input type="date" class="rt" data-j="'+j+'" value="'+r.to+'" style="'+inp+'"></div></div>';}).join('')+'</div>';
 }
 function autoHtml(){
   var up=upcoming(),A=CFG.auto||{},sel='min-height:36px;padding:0 6px;border:1px solid #C9BFC6;background:#fff';
@@ -830,7 +830,6 @@ function admin(view){
     CFG.rng=CFG.rng||{};CFG.rng[m.t]={from:f||'',to:t||''};saveCfg();again();}
   function rv(j){return [app.querySelector('.rf[data-j="'+j+'"]').value,app.querySelector('.rt[data-j="'+j+'"]').value];}
   app.querySelectorAll('.rf,.rt').forEach(function(e){e.onchange=function(){var v=rv(e.getAttribute('data-j'));setRng(+e.getAttribute('data-j'),v[0],v[1]);};});
-  app.querySelectorAll('.rx').forEach(function(e){e.onclick=function(){var j=+e.getAttribute('data-j'),v=rv(j),last=addKey(dayInfo(adminDay).key,-1);if(!confirm('End "'+MOVIES[j].t+'" on '+fmtKey(last)+'? It will not play or be bookable from '+dayInfo(adminDay).sub+' onwards. Existing bookings stay.'))return;setRng(j,v[0],last);};});
   function autoSave(k){
     var x=upcoming()[k],box=$('am3'),row=app.querySelector('.ar[data-k="'+k+'"]');if(!x||!row)return;
     var ae=row.querySelector('.ae'),on=ae.checked,scr=row.querySelector('.asc').value,lang=row.querySelector('.alg').value,times=[],rk=relKey(x.d);
