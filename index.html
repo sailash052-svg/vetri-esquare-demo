@@ -198,7 +198,7 @@ footer{font-size:13px}
 .snk .tab2.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .snk .pnl[hidden]{display:none}
 .snk .cat{font-size:13px;font-weight:600;color:var(--muted);padding:14px 0 4px}
-.snk .it{align-items:center}.ic{width:44px;height:44px;flex:none;border-radius:10px;background:#f4f4f4;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:24px}.ic.ib{font:800 9px/1.1 'Plus Jakarta Sans',sans-serif;text-align:center;letter-spacing:0}.snk .it span:first-of-type{flex:1;text-align:left}
+.snk .it{align-items:center}.ic{width:44px;height:44px;flex:none;border-radius:10px;background:#f4f4f4;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:24px}.ic.im{width:52px;height:52px;object-fit:contain;background:#fff;padding:0}.ic.ib{font:800 9px/1.1 'Plus Jakarta Sans',sans-serif;text-align:center;letter-spacing:0}.snk .it span:first-of-type{flex:1;text-align:left}
 .snk .stp{display:flex;align-items:center;gap:8px;margin-left:8px}
 .snk .stp button{width:30px;height:30px;border:1px solid #DDD;background:#fff;border-radius:6px;font-size:18px;line-height:1;padding:0;color:var(--ink)}
 .snk .stp button:hover{border-color:var(--ink)}
@@ -488,9 +488,9 @@ function home(){
   quoteInit();
 }
 
-var SNACKS=[{c:'Popcorn',items:[['Salted, regular',120,'e:🍿'],['Salted, large',190,'e:🍿'],['Caramel, regular',140,'e:🍿'],['Caramel, large',210,'e:🍿'],['Cheese, regular',150,'e:🧀']]},{c:'Drinks',items:[['Pepsi',80,'b:pepsi'],['Coca-Cola',80,'b:coke'],['7UP',80,'b:7up'],['Nescafe cold coffee',90,'b:nescafe'],['Fresh lime soda',70,'e:🍋'],['Water bottle',30,'e:💧']]},{c:'Bites',items:[['Samosa (2 pcs)',40,'e:🥟'],['Veg puff',35,'e:🥐'],['French fries',100,'e:🍟'],['Nachos with cheese',130,'e:🌮']]},{c:'Combos',items:[['Large popcorn and cold drink',250,'e:🍿'],['2 regular popcorn and 2 cold drinks',420,'e:🍿']]}];
+var SNACKS=[{c:'Popcorn',items:[['Salted, regular',120,'e:🍿'],['Salted, large',190,'e:🍿'],['Caramel, regular',140,'e:🍿'],['Caramel, large',210,'e:🍿'],['Cheese, regular',150,'e:🧀']]},{c:'Drinks',items:[['Pepsi',80,'i:pepsi'],['Coca-Cola',80,'i:coke'],['7UP',80,'i:7up'],['Nescafe cold coffee',90,'i:nescafe'],['Sprite (lime soda)',70,'i:sprite'],['Kinley water bottle',30,'i:kinley']]},{c:'Bites',items:[['Samosa (2 pcs)',40,'e:🥟'],['Veg puff',35,'e:🥐'],['French fries',100,'e:🍟'],['Nachos with cheese',130,'e:🌮']]},{c:'Combos',items:[['Large popcorn and cold drink',250,'e:🍿'],['2 regular popcorn and 2 cold drinks',420,'e:🍿']]}];
 var BR={pepsi:['#0B3D91','#fff','PEPSI'],coke:['#E41E2B','#fff','Coca-Cola'],'7up':['#0A8F3C','#fff','7UP'],nescafe:['#B71C1C','#fff','NESCAFÉ']};
-function snIcon(c){c=c||'';if(c.indexOf('b:')===0){var b=BR[c.slice(2)];return '<i class="ic ib" style="background:'+b[0]+';color:'+b[1]+'">'+b[2]+'</i>';}return '<i class="ic">'+c.slice(2)+'</i>';}
+function snIcon(c){c=c||'';if(c.indexOf('i:')===0)return '<img class="ic im" src="snacks/'+c.slice(2)+'-v1.jpg" alt="" loading="lazy">';if(c.indexOf('b:')===0){var b=BR[c.slice(2)];return '<i class="ic ib" style="background:'+b[0]+';color:'+b[1]+'">'+b[2]+'</i>';}return '<i class="ic">'+c.slice(2)+'</i>';}
 var SN_ALL=[],sq={};
 SNACKS.forEach(function(g){g.items=g.items.map(function(x,i){var o={n:x[0],p:x[1],ic:x[2],id:'s'+SN_ALL.length};SN_ALL.push(o);return o;});});
 function orders(){try{return JSON.parse(localStorage.getItem('ves_orders')||'[]');}catch(e){return [];}}
