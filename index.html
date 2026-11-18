@@ -765,8 +765,8 @@ function moviesAdminHtml(){
 }
 function runHtml(){
   var inp='min-height:36px;padding:0 6px;border:1px solid #C9BFC6;background:#fff',bs='min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;color:#222;margin:0;font-weight:600;border-radius:6px;cursor:pointer';
-  return '<h2 style="font-weight:700;margin-top:26px">Run dates</h2><p style="color:#717171;font-size:14px;margin:0 0 10px">Set the first and last day a movie plays. Outside those days it is not shown or bookable. Leave a box empty for no limit. Existing bookings stay.</p><div class="tb"><div class="r h"><div>Movie</div><div>First day</div><div>Last day</div></div>'+MOVIES.map(function(m,j){var r=rngOf(m);
-    return '<div class="r"><div style="font-weight:700">'+esc(m.t)+'</div><div><input type="date" class="rf" data-j="'+j+'" value="'+r.from+'" style="'+inp+'"></div><div><input type="date" class="rt" data-j="'+j+'" value="'+r.to+'" style="'+inp+'"></div></div>';}).join('')+'</div>';
+  return '<h2 style="font-weight:700;margin-top:26px">Run dates</h2><p style="color:#717171;font-size:14px;margin:0 0 10px">Set the first and last day a movie plays. Outside those days it is not shown or bookable. Leave a box empty for no limit. Press Confirm to save. Existing bookings stay.</p><div class="tb"><div class="r h"><div>Movie</div><div>First day</div><div>Last day</div><div></div></div>'+MOVIES.map(function(m,j){var r=rngOf(m);
+    return '<div class="r"><div style="font-weight:700">'+esc(m.t)+'</div><div><input type="date" class="rf" data-j="'+j+'" value="'+r.from+'" style="'+inp+'"></div><div><input type="date" class="rt" data-j="'+j+'" value="'+r.to+'" style="'+inp+'"></div><div><button type="button" class="rc" data-j="'+j+'" style="'+bs+'">Confirm</button></div></div>';}).join('')+'</div>';
 }
 function autoHtml(){
   var up=upcoming(),A=CFG.auto||{},sel='min-height:36px;padding:0 6px;border:1px solid #C9BFC6;background:#fff';
@@ -840,9 +840,10 @@ function admin(view){
     saveCfg();again();};});
   function setRng(j,f,t){var m=MOVIES[j],box=$('am2'),old=rngOf(m);
     if(f&&t&&t<f){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='The last day must be on or after the first day.';app.querySelector('.rf[data-j="'+j+'"]').value=old.from;app.querySelector('.rt[data-j="'+j+'"]').value=old.to;return;}
-    CFG.rng=CFG.rng||{};CFG.rng[m.t]={from:f||'',to:t||''};saveCfg();again();}
+    CFG.rng=CFG.rng||{};CFG.rng[m.t]={from:f||'',to:t||''};saveCfg();again();
+    var b2=$('am2');if(b2){b2.style.display='block';b2.style.background='#E3F6E8';b2.style.border='1px solid #2E9E4F';b2.textContent='Saved. '+m.t+(f||t?' plays '+(f?'from '+fmtKey(f):'')+(f&&t?' ':'')+(t?'until '+fmtKey(t):''):' has no date limit')+'.';}}
   function rv(j){return [app.querySelector('.rf[data-j="'+j+'"]').value,app.querySelector('.rt[data-j="'+j+'"]').value];}
-  app.querySelectorAll('.rf,.rt').forEach(function(e){e.onchange=function(){var v=rv(e.getAttribute('data-j'));setRng(+e.getAttribute('data-j'),v[0],v[1]);};});
+  app.querySelectorAll('.rc').forEach(function(e){e.onclick=function(){var j=+e.getAttribute('data-j'),v=rv(j);setRng(j,v[0],v[1]);};});
   function autoSave(k){
     var x=upcoming()[k],box=$('am3'),row=app.querySelector('.ar[data-k="'+k+'"]');if(!x||!row)return;
     var ae=row.querySelector('.ae'),on=ae.checked,scr=row.querySelector('.asc').value,lang=row.querySelector('.alg').value,times=[],rk=relKey(x.d);
