@@ -308,7 +308,7 @@ function buildHall(key){
   scI.count=sci;add(scI);
   var scg=new THREE.BufferGeometry();scg.setAttribute('position',new THREE.Float32BufferAttribute(scp,3));
   add(new THREE.Points(scg,new THREE.PointsMaterial({map:gTex,size:2.4,transparent:true,opacity:0.35,blending:THREE.AdditiveBlending,depthWrite:false,color:0xff9a40})));
-  [-1,1].forEach(function(sd){var cu=add(new THREE.Mesh(new THREE.BoxGeometry(1.5,sc.h+2.4,0.5),new THREE.MeshStandardMaterial({color:0x8a1118,roughness:0.9})));cu.position.set(sd*(sc.w/2+1.5),(sc.h+2.4)/2,-0.1);});
+  [-1,1].forEach(function(sd){var cu=add(new THREE.Mesh(new THREE.BoxGeometry(0.6,sc.h+2.4,0.3),new THREE.MeshStandardMaterial({color:0x8a1118,roughness:0.9})));cu.position.set(sd*(sc.w/2+0.9),(sc.h+2.4)/2,-0.1);});
   if(HC.swoosh){
     var swMat=new THREE.MeshBasicMaterial({map:swTex,transparent:true,depthWrite:false});
     var swL=add(new THREE.Mesh(new THREE.PlaneGeometry(13,9.75),swMat));swL.position.set(-HW/2+0.04,7.4,13);swL.rotation.y=Math.PI/2;
