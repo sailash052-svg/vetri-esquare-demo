@@ -257,10 +257,10 @@ function buildHall(key){
   var asp=HC.screen.w/HC.screen.h;tFilm.repeat.set(1,Math.min(1,1.9/asp));tFilm.offset.set(0,(1-tFilm.repeat.y)/2);
   screenMat=new THREE.MeshBasicMaterial({map:showFilm?tFilm:tBlank});
   screen=add(new THREE.Mesh(new THREE.PlaneGeometry(1,1),screenMat));
-  frame=add(new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0x020202})));
+  frame=add(new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0x7d7d84})));
   var sc=HC.screen,cy=HC.screenBottom+sc.h/2;
   screen.scale.set(sc.w,sc.h,1);screen.position.set(0,cy,0);
-  frame.scale.set(sc.w+0.5,sc.h+0.4,1);frame.position.set(0,cy,-0.05);
+  frame.scale.set(sc.w+0.7,sc.h+0.6,1);frame.position.set(0,cy,-0.05);
   glow.position.set(0,cy,4);
 
   // room shell
@@ -308,7 +308,7 @@ function buildHall(key){
   scI.count=sci;add(scI);
   var scg=new THREE.BufferGeometry();scg.setAttribute('position',new THREE.Float32BufferAttribute(scp,3));
   add(new THREE.Points(scg,new THREE.PointsMaterial({map:gTex,size:2.4,transparent:true,opacity:0.35,blending:THREE.AdditiveBlending,depthWrite:false,color:0xff9a40})));
-  [-1,1].forEach(function(sd){var cu=add(new THREE.Mesh(new THREE.BoxGeometry(0.6,sc.h+2.4,0.3),new THREE.MeshStandardMaterial({color:0x8a1118,roughness:0.9})));cu.position.set(sd*(sc.w/2+0.9),(sc.h+2.4)/2,-0.1);});
+  [-1,1].forEach(function(sd){var cu=add(new THREE.Mesh(new THREE.BoxGeometry(0.4,sc.h+2.4,0.3),new THREE.MeshStandardMaterial({color:0x8a1118,roughness:0.9})));cu.position.set(sd*(sc.w/2+0.85),(sc.h+2.4)/2,-0.1);});
   if(HC.swoosh){
     var swMat=new THREE.MeshBasicMaterial({map:swTex,transparent:true,depthWrite:false});
     var swL=add(new THREE.Mesh(new THREE.PlaneGeometry(13,9.75),swMat));swL.position.set(-HW/2+0.04,7.4,13);swL.rotation.y=Math.PI/2;
