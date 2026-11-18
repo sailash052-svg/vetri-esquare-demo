@@ -731,7 +731,8 @@ function moviesAdminHtml(){
   var rem=CFG.removed||[];
   if(rem.length)o+='<h2 style="font-weight:700">Deleted movies</h2><div class="tb" style="max-width:520px">'+rem.map(function(t){return '<div class="r"><div style="font-weight:700">'+esc(t)+'</div><div><button class="mr" data-t="'+esc(t)+'" style="'+btn+'">Restore</button></div></div>';}).join('')+'</div>';
   o+='<h2 style="font-weight:700">Add a new movie</h2><div class="form" style="max-width:640px"><div class="fl">'
-    +'<div style="flex:1 1 100%"><label>Movie name</label><input id="nt" type="text" maxlength="40" placeholder="e.g. Leo"></div>'
+    +'<div style="flex:1 1 100%"><label>Movie name</label><input id="nt" type="text" maxlength="40" list="nl2" autocomplete="off" placeholder="Type a name or pick a coming soon movie"><datalist id="nl2">'+upcoming().map(function(x){return '<option value="'+esc(x.t)+'">';}).join('')+'</datalist>'
+    +(upcoming().length?'<div style="margin-top:8px;font-size:13px;color:#717171">Coming soon, tap to fill in the details:</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">'+upcoming().map(function(x,k){return '<button type="button" class="sg" data-k="'+k+'" style="min-height:34px;padding:0 12px;border:1px solid #A3124A;background:#fff;color:#A3124A;margin:0;font-weight:600;border-radius:18px;cursor:pointer">'+esc(x.t)+'</button>';}).join('')+'</div>':'')+'</div>'
     +'<div style="flex:1 1 140px"><label>Language</label><select id="nl">'+LANGS.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select></div>'
     +'<div style="flex:1 1 140px"><label>Runtime</label><input id="nr" type="text" maxlength="10" placeholder="2h 30m"></div>'
     +'<div style="flex:1 1 140px"><label>Certificate</label><select id="nc">'+CERTS.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select></div>'
@@ -741,6 +742,7 @@ function moviesAdminHtml(){
     +'<div style="flex:1 1 200px"><label>Director (optional)</label><input id="nd" type="text" maxlength="40"></div>'
     +'<div style="flex:1 1 100%"><label>Cast and details (optional)</label><input id="nm" type="text" maxlength="120"></div>'
     +'<div style="flex:1 1 100%"><label>Poster picture (optional, tall poster)</label><input id="np" type="file" accept="image/*"></div>'
+    +'<div style="flex:1 1 100%"><label style="display:flex;gap:8px;align-items:center;margin:0;color:#222"><input type="checkbox" id="nrm" checked style="width:auto;min-height:0">If this movie is listed in Coming soon, remove it from there</label></div>'
     +'</div><button id="na">Add movie</button></div>';
   return o;
 }
@@ -835,6 +837,16 @@ function admin(view){
     if(CFG.slots)delete CFG.slots[m.t];if(CFG.scr)delete CFG.scr[m.t];dropDay(m.t);
     saveCfg();applyCfg();again();};});
   app.querySelectorAll('.mr').forEach(function(e){e.onclick=function(){var t=e.getAttribute('data-t');CFG.removed=(CFG.removed||[]).filter(function(x){return x!==t;});saveCfg();applyCfg();again();};});
+  function soonFill(x){
+    if(!x)return;var f=SOON_INFO[x.t]||{};
+    $('nt').value=x.t;
+    if(x.d&&/\d/.test(x.d))$('nrel').value=x.d;
+    if(f.dir)$('nd').value=f.dir;
+    var bits=[];if(f.hero)bits.push(f.hero);if(f.heroine)bits.push(f.heroine);if(f.more)bits.push(f.more);
+    if(bits.length)$('nm').value=bits.join('. ').slice(0,120);
+  }
+  app.querySelectorAll('.sg').forEach(function(e){e.onclick=function(){soonFill(upcoming()[+e.getAttribute('data-k')]);};});
+  if($('nt'))$('nt').onchange=function(){var v=$('nt').value.trim().toLowerCase();soonFill(upcoming().filter(function(x){return x.t.toLowerCase()===v;})[0]);};
   if($('na'))$('na').onclick=function(){
     var t=cleanTitle($('nt').value),run=$('nr').value.trim(),scr=$('ns').value,times=[];
     app.querySelectorAll('.nts').forEach(function(c){if(c.checked)times.push(+c.getAttribute('data-i'));});
@@ -844,10 +856,16 @@ function admin(view){
     if(!times.length){amsg('Tick at least one show time.');return;}
     var clash=null;for(var d1=0;d1<=DAYS;d1++)times.forEach(function(i){MOVIES.forEach(function(o){if(o.s===scr&&tf(o,d1).indexOf(i)>=0&&!clash)clash={o:o,t:i};});});
     if(clash){amsg('Clash: '+scr+' already shows '+clash.o.t+' at '+TIMES[clash.t]+'. Pick other times or another screen.');return;}
-    var cert=$('nc').value,a={t:t,m:$('nl').value+' \u00b7 '+run+' \u00b7 '+cert,s:scr,times:times.sort(),info:{rel:$('nrel').value.trim(),run:run,cert:cert,dir:$('nd').value.trim(),more:$('nm').value.trim()},poster:''};
+    var cert=$('nc').value,a={t:t,m:$('nl').value+' \u00b7 '+run+' \u00b7 '+cert,s:scr,times:times.sort(),info:{},poster:''};
+    var soon=upcoming().filter(function(x){return x.t.toLowerCase()===t.toLowerCase();})[0],sf=soon?(SOON_INFO[soon.t]||{}):{};
+    for(var k2 in sf)a.info[k2]=sf[k2];
+    var fv={rel:$('nrel').value.trim(),run:run,cert:cert,dir:$('nd').value.trim(),more:$('nm').value.trim()};
+    for(var k3 in fv)if(fv[k3])a.info[k3]=fv[k3];
+    if(soon&&!a.info.rel&&soon.d&&/\d/.test(soon.d))a.info.rel=soon.d;
     function commit(){
-      var old=CFG.added;CFG.added=(CFG.added||[]).concat([a]);
-      try{localStorage.setItem('ves_cfg',JSON.stringify(CFG));}catch(e){CFG.added=old;amsg('This browser has no room to keep that poster. Try a smaller picture, or add the movie without one.');return;}
+      var old=CFG.added,oldUp=CFG.upcoming;CFG.added=(CFG.added||[]).concat([a]);
+      if(soon&&$('nrm').checked)CFG.upcoming=upcoming().filter(function(x){return x!==soon;});
+      try{localStorage.setItem('ves_cfg',JSON.stringify(CFG));}catch(e){CFG.added=old;CFG.upcoming=oldUp;amsg('This browser has no room to keep that poster. Try a smaller picture, or add the movie without one.');return;}
       applyCfg();again();
     }
     var f=$('np').files[0];
