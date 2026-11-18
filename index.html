@@ -339,18 +339,19 @@ function soonHTML(){
 }
 /* Details come from the posters and public release news. Add more when confirmed. */
 var SOON_INFO={
-  'Godzilla Minus Zero':{dir:'Takashi Yamazaki',hero:'Ryunosuke Kamiki',heroine:'Minami Hamabe',villain:'',comic:'',music:'',cast:'',more:'Written, directed and with VFX by Takashi Yamazaki. Filmed for IMAX. Opened in North America on 6 Nov 2026.'},
-  'Om: Chapter 1':{dir:'Rajkumar Periasamy',hero:'Dhanush',heroine:'Sai Pallavi, Sreeleela',villain:'',comic:'',music:'Sai Abhyankkar',cast:'Mammootty (a smuggler), Naseeruddin Shah',more:'Full title: Om - Chapter 1: Udhiram - The Blood Wood.'},
-  'Avengers: Doomsday':{dir:'',hero:'',heroine:'',villain:'',comic:'',music:'',cast:'',more:'A Marvel Studios film. Opens in the US on 18 Dec 2026, a day after India.'},
-  'Dune: Part Three':{dir:'Denis Villeneuve',hero:'Timoth\u00e9e Chalamet',heroine:'Zendaya',villain:'',comic:'',music:'',cast:'',more:'The epic conclusion. Filmed for IMAX. Opens in the US on 18 Dec 2026.'},
-  'King':{dir:'Siddharth Anand',hero:'Shah Rukh Khan',heroine:'Deepika Padukone',villain:'Abhishek Bachchan',comic:'',music:'Sachin-Jigar',cast:'Suhana Khan, Anil Kapoor, Rani Mukerji, Jackie Shroff, Arshad Warsi',more:'Produced by Red Chillies Entertainment and Marflix Pictures.'}
+  'Godzilla Minus Zero':{run:'2h 17m',cert:'UA',dir:'Takashi Yamazaki',hero:'Ryunosuke Kamiki (Koichi Shikishima)',heroine:'Minami Hamabe (Noriko Oishi)',villain:'',comic:'',music:'',cast:'Yuki Yamada, Hidetaka Yoshioka, Kuranosuke Sasaki, Sakura Ando, Miou Tanaka',more:'Written, directed and with VFX by Takashi Yamazaki. Releases in IMAX in India on 20 Nov 2026 (moved from 6 Nov). Reported to have a UA certificate from CBFC.'},
+  'Om: Chapter 1':{dir:'Rajkumar Periasamy',hero:'Dhanush',heroine:'Sai Pallavi, Sreeleela',villain:'',comic:'',music:'Sai Abhyankkar',cast:'Mammootty, Naseeruddin Shah',more:'Full title: Om - Chapter 1: Udhiram - The Blood Wood. Release moved to 20 Nov 2026 (earlier 16 Oct).'},
+  'Avengers: Doomsday':{run:'2h 45m',dir:'Anthony and Joe Russo (the Russo Brothers)',hero:'Robert Downey Jr. (Doctor Doom)',heroine:'Florence Pugh, Vanessa Kirby',villain:'',comic:'',music:'',cast:'Pedro Pascal, Paul Rudd, Anthony Mackie, Wyatt Russell, Channing Tatum, Simu Liu',more:'A Marvel Studios film. Screenplay by Stephen McFeely. Opens in India on 17 Dec 2026, a day before the US. Runtime of about 2h 45m is reported, not final.'},
+  'Dune: Part Three':{run:'2h 30m',dir:'Denis Villeneuve',hero:'Timoth\u00e9e Chalamet',heroine:'Zendaya',villain:'',comic:'',music:'',cast:'Robert Pattinson (Scytale), Florence Pugh, Jason Momoa',more:'Based on Frank Herbert\u2019s Dune Messiah. Filmed for IMAX. Opens on 18 Dec 2026 (17 Dec in some countries). Runtime of about 2h 30m is from a cinema listing, not final.'},
+  'King':{dir:'Siddharth Anand',hero:'Shah Rukh Khan',heroine:'Deepika Padukone',villain:'Abhishek Bachchan',comic:'',music:'Sachin-Jigar',cast:'Suhana Khan, Rani Mukerji, Arshad Warsi, Anil Kapoor, Jackie Shroff, Raghav Juyal, Jaideep Ahlawat, Saurabh Shukla',more:'Produced by Red Chillies Entertainment and Marflix Pictures. Opens on 24 Dec 2026.'}
 };
+
 function soonDetail(k){
   var x=upcoming()[k];if(!x){go('#/');return;}
   var f=SOON_INFO[x.t]||{},slug=String(x.t).toLowerCase().replace(/[^a-z0-9]+/g,'-'),url='posters/'+slug+'.jpg';
   function row(a,b){return b?'<div class="dr"><span>'+a+'</span><b>'+esc(b)+'</b></div>':'';}
   var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/movies" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><div class="eb" style="margin-top:14px">Coming soon</div><h1 style="margin-top:6px">'+esc(x.t)+'</h1>';
-  h+='<div class="drs" style="margin-top:14px">'+row('Release date',x.d)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
+  h+='<div class="drs" style="margin-top:14px">'+row('Release date',x.d)+row('Runtime',f.run)+row('Certificate',f.cert)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
   h+='<div class="muted" style="margin:22px 0;font-size:14px">Booking opens closer to the release date.</div><a class="b1" href="#/movies">See what is showing now</a></div>';
   h+='<div class="poster"><div id="hPT" style="display:block;position:absolute;left:20px;bottom:18px;font-weight:700;font-size:24px;color:#555">'+esc(x.t)+'</div><img alt="'+esc(x.t)+' poster" src="'+url+'" style="position:relative;display:block;width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div></div>';
   app.innerHTML=h;
@@ -842,6 +843,8 @@ function admin(view){
     $('nt').value=x.t;
     if(x.d&&/\d/.test(x.d))$('nrel').value=x.d;
     if(f.dir)$('nd').value=f.dir;
+    if(f.run)$('nr').value=f.run;
+    if(f.cert&&CERTS.indexOf(f.cert)>=0)$('nc').value=f.cert;
     var bits=[];if(f.hero)bits.push(f.hero);if(f.heroine)bits.push(f.heroine);if(f.more)bits.push(f.more);
     if(bits.length)$('nm').value=bits.join('. ').slice(0,120);
   }
