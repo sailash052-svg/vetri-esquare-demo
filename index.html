@@ -366,7 +366,7 @@ function applyCfg(){
   });
   var ai=0;Object.keys(CFG.auto||{}).forEach(function(t){var a=CFG.auto[t],rk=relKey(a.rel);ai++;
     if(!a.on||!rk||!a.times||!a.times.length||out.some(function(o){return o.t===t;}))return;
-    out.push({t:t,m:[a.lang||'English',a.run,a.cert].filter(Boolean).join(' \u00b7 '),s:a.s,def:a.times.slice(),times:a.times.slice(),a:GRADS[ai%GRADS.length],poster:'',custom:1,auto:1,from:rk,openKey:(typeof a.adv==='number'&&a.adv>=0)?addKey(rk,-a.adv):''});
+    out.push({t:t,m:[a.lang||'English',a.run,a.cert].filter(Boolean).join(' \u00b7 '),s:a.s,def:a.times.slice(),times:a.times.slice(),a:GRADS[ai%GRADS.length],poster:(CFG.spic&&CFG.spic[t])||'',custom:1,auto:1,from:rk,openKey:(typeof a.adv==='number'&&a.adv>=0)?addKey(rk,-a.adv):''});
     INFO[t]=a.info||{};});
   MOVIES.length=0;out.forEach(function(m){MOVIES.push(m);});
   MOVIES.forEach(function(m){m.times=(CFG.slots&&CFG.slots[m.t])?CFG.slots[m.t].slice():m.def.slice();});
@@ -387,13 +387,14 @@ function takenSet(mt,dk,t){
 /* Upcoming movies: default list from public release news (unconfirmed). Admin can edit it. */
 var UPCOMING=[{t:'Godzilla Minus Zero',d:'20 Nov 2026'},{t:'Om: Chapter 1',d:'20 Nov 2026'},{t:'Avengers: Doomsday',d:'17 Dec 2026'},{t:'Dune: Part Three',d:'18 Dec 2026'},{t:'King',d:'24 Dec 2026'}];
 function upcoming(){return CFG.upcoming||UPCOMING;}
+function soonPic(t){var u=CFG.spic&&CFG.spic[t];return u||'posters/'+String(t).toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.jpg';}
 function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function creditRows(f){function r(k,v){return '<div class="dr"><span>'+k+'</span><b>'+esc(v||'Not listed')+'</b></div>';}var c=[f.hero,f.heroine,f.villain,f.comic,f.cast].filter(Boolean).join(', ');return r('Cast',c)+r('Music',f.music);}
 function soonHTML(){
   var u=upcoming();if(!u.filter(function(x){return !soonLive(x);}).length)return '';
   return '<div class="sec" id="s-soon"><h2>Coming soon</h2><p class="muted note">Booking opens closer to the release date.</p><div class="grid" style="gap:22px">'+u.map(function(x,k){
     if(soonLive(x))return '';var slug=String(x.t).toLowerCase().replace(/[^a-z0-9]+/g,'-');
-    return '<a class="mv" href="#/soon/'+k+'"><div class="a">'+esc(x.t)+'<img src="posters/'+slug+'.jpg" alt="'+esc(x.t)+' poster" style="display:block;width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div><div style="font-weight:700;margin-top:10px">'+esc(x.t)+'</div><div class="muted" style="font-size:13px">'+esc(x.d)+'</div></a>';}).join('')+'</div></div>';
+    return '<a class="mv" href="#/soon/'+k+'"><div class="a">'+esc(x.t)+'<img src="'+soonPic(x.t)+'" alt="'+esc(x.t)+' poster" style="display:block;width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div><div style="font-weight:700;margin-top:10px">'+esc(x.t)+'</div><div class="muted" style="font-size:13px">'+esc(x.d)+'</div></a>';}).join('')+'</div></div>';
 }
 /* Details come from the posters and public release news. Add more when confirmed. */
 var SOON_INFO={
@@ -406,7 +407,7 @@ var SOON_INFO={
 
 function soonDetail(k){
   var x=upcoming()[k];if(!x){go('#/');return;}
-  var f=SOON_INFO[x.t]||{},slug=String(x.t).toLowerCase().replace(/[^a-z0-9]+/g,'-'),url='posters/'+slug+'.jpg';
+  var f=SOON_INFO[x.t]||{},url=soonPic(x.t);
   function row(a,b){return b?'<div class="dr"><span>'+a+'</span><b>'+esc(b)+'</b></div>':'';}
   var h='<div class="hero"><div class="hbg" style="background-image:url('+url+');opacity:1"></div><div class="l"><a href="#/movies" style="color:rgba(255,255,255,.8);font-size:14px;text-decoration:none">&larr; Back</a><div class="eb" style="margin-top:14px">Coming soon</div><h1 style="margin-top:6px">'+esc(x.t)+'</h1>';
   h+='<div class="drs" style="margin-top:14px">'+row('Release date',x.d)+row('Runtime',f.run)+row('Certificate',f.cert)+row('Director',f.dir)+creditRows(f)+row('Details',f.more)+'</div>';
@@ -842,7 +843,7 @@ function admin(view){
     body=moviesAdminHtml();
   }else if(adminView==='upcoming'){
     var up=upcoming();
-    body='<h1>Coming soon</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">These movies appear in the Coming soon section of the website. They cannot be booked yet.</p><div class="tb"><div class="r h"><div>Movie</div><div>Release</div><div></div></div>'+(up.map(function(x,k){return '<div class="r"><div style="font-weight:700">'+esc(x.t)+'</div><div>'+esc(x.d)+'</div><div><button class="ud" data-k="'+k+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">Remove</button></div></div>';}).join('')||'<div class="r" style="min-width:0;color:#717171">Nothing listed.</div>')+'</div>'+autoHtml()+H2+'Add a movie</h2><div class="form"><div class="fl"><div style="flex:1 1 220px"><label>Movie name</label><input id="ut"></div><div style="flex:1 1 180px"><label>Release (for example 27 Nov 2026)</label><input id="ud"></div></div><button id="ua">Add</button><div class="msg" id="am2"></div><div style="font-size:13px;color:#717171;margin-top:12px">To show a poster, add a picture named like the movie (for example <b>maaruvesham.jpg</b>) to the posters folder.</div></div>';
+    body='<h1>Coming soon</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">These movies appear in the Coming soon section of the website. They cannot be booked yet.</p><div class="tb"><div class="r h"><div>Movie</div><div>Release</div><div></div></div>'+(up.map(function(x,k){return '<div class="r"><div style="font-weight:700">'+esc(x.t)+'</div><div>'+esc(x.d)+'</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="up" data-k="'+k+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">'+(CFG.spic&&CFG.spic[x.t]?'Change poster':'Upload poster')+'</button>'+(CFG.spic&&CFG.spic[x.t]?'<button class="upx" data-k="'+k+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">Remove poster</button>':'')+'<button class="ud" data-k="'+k+'" style="min-height:34px;padding:0 12px;border:1px solid #222;background:#fff;border-radius:6px">Remove</button></div></div>';}).join('')||'<div class="r" style="min-width:0;color:#717171">Nothing listed.</div>')+'</div>'+autoHtml()+H2+'Add a movie</h2><div class="form"><div class="fl"><div style="flex:1 1 220px"><label>Movie name</label><input id="ut"></div><div style="flex:1 1 180px"><label>Release (for example 27 Nov 2026)</label><input id="ud"></div><div style="flex:1 1 100%"><label>Poster picture (optional, tall poster)</label><input id="upf" type="file" accept="image/*"></div></div><button id="ua">Add</button><div class="msg" id="am2"></div><div style="font-size:13px;color:#717171;margin-top:12px">Use Upload poster on any row to add or change its poster. A big, sharp picture works best.</div></div>';
   }else if(adminView==='bookings'){
     body='<h1>Bookings</h1><p style="color:#717171;font-size:14px;margin:0 0 14px">Every ticket paid for on the website. Cancelling a booking frees its seats.</p>'+bookingRows()+'<button type="button" id="cl" style="margin-top:16px;min-height:40px;padding:0 16px;border:1px solid #D0362B;color:#D0362B;background:#fff;border-radius:6px">Clear all demo bookings and snack orders</button>';
   }else if(adminView==='snacks'){
@@ -911,7 +912,11 @@ function admin(view){
     CFG.slots=CFG.slots||{};MOVIES.forEach(function(m){var t=tfRaw(m,adminDay).slice();m.times=t;CFG.slots[m.t]=t.slice();});
     delete CFG.dayt;delete CFG.dscr;saveCfg();applyCfg();again();};
   app.querySelectorAll('.ud').forEach(function(b){b.onclick=function(){var u=upcoming().slice();u.splice(+b.getAttribute('data-k'),1);CFG.upcoming=u;saveCfg();again();};});
-  if($('ua'))$('ua').onclick=function(){var t=$('ut').value.trim(),d=$('ud').value.trim(),box=$('am2');if(!t){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Enter the movie name.';return;}var u=upcoming().slice();u.push({t:t,d:d||'Date to be announced'});CFG.upcoming=u;saveCfg();again();};
+  function soonPicRead(f,cb){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var w=Math.min(1200,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth),cv=document.createElement('canvas'),cx;cv.width=w;cv.height=h;cx=cv.getContext('2d');cx.imageSmoothingQuality='high';cx.drawImage(im,0,0,w,h);cb(cv.toDataURL('image/jpeg',0.92));};im.onerror=function(){cb(null);};im.src=fr.result;};fr.readAsDataURL(f);}
+  function soonPicSave(t,u){var o=CFG.spic;CFG.spic=Object.assign({},o||{});if(u)CFG.spic[t]=u;else delete CFG.spic[t];try{localStorage.setItem('ves_cfg',JSON.stringify(CFG));}catch(e){CFG.spic=o;return false;}applyCfg();return true;}
+  app.querySelectorAll('.up').forEach(function(b){b.onclick=function(){var x=upcoming()[+b.getAttribute('data-k')],inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=function(){var f=inp.files[0];if(!f)return;if(!/^image\//.test(f.type)){alert('Choose a picture file.');return;}soonPicRead(f,function(u){if(!u){alert('That file could not be read as a picture.');return;}if(!soonPicSave(x.t,u)){alert('This browser has no room to keep that picture. Try a smaller one.');return;}again();});};inp.click();};});
+  app.querySelectorAll('.upx').forEach(function(b){b.onclick=function(){var x=upcoming()[+b.getAttribute('data-k')];soonPicSave(x.t,null);again();};});
+  if($('ua'))$('ua').onclick=function(){var t=$('ut').value.trim(),d=$('ud').value.trim(),box=$('am2');if(!t){box.style.display='block';box.style.background='#FDE3EA';box.style.border='1px solid #FF5A4E';box.textContent='Enter the movie name.';return;}var f=$('upf')&&$('upf').files[0];function fin(pic){var u=upcoming().slice();u.push({t:t,d:d||'Date to be announced'});CFG.upcoming=u;saveCfg();if(pic&&!soonPicSave(t,pic))alert('Movie added, but this browser has no room for the poster.');again();}if(f&&/^image\//.test(f.type))soonPicRead(f,function(pic){fin(pic);});else fin(null);};
   if($('rs'))$('rs').onclick=function(){delete CFG.slots;delete CFG.dayt;delete CFG.dscr;saveCfg();applyCfg();again();};
   if($('cl'))$('cl').onclick=function(){if(confirm('Delete all demo bookings and snack orders in this browser?')){saveBookings([]);saveOrders([]);again();}};
   function amsg(t,ok){var box=$('am2');if(!box)return;box.style.display='block';box.style.background=ok?'#E3F6E8':'#FDE3EA';box.style.border='1px solid '+(ok?'#2E9E4F':'#FF5A4E');box.textContent=t;}
