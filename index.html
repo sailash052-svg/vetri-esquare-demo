@@ -928,8 +928,8 @@ function admin(view){
     if((CFG.pics||[]).length>=6){amsg('You can keep up to 6 uploaded pictures. Delete one first.');return;}
     var fr=new FileReader();
     fr.onload=function(){var im=new Image();im.onload=function(){
-      var w=Math.min(1280,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth),c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);
-      var u=c.toDataURL('image/jpeg',0.82),pics=(CFG.pics||[]).slice(),id='u'+Date.now();pics.push({id:id,n:n,u:u});
+      var w=Math.min(1280,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth),c=document.createElement('canvas');c.width=w;c.height=h;var cx=c.getContext('2d');cx.imageSmoothingQuality='high';cx.drawImage(im,0,0,w,h);
+      var u=c.toDataURL('image/jpeg',0.92),pics=(CFG.pics||[]).slice(),id='u'+Date.now();pics.push({id:id,n:n,u:u});
       var old=CFG.pics;CFG.pics=pics;
       try{localStorage.setItem('ves_cfg',JSON.stringify(CFG));}catch(e){CFG.pics=old;amsg('This browser has no room to keep that picture. Try a smaller one or delete an uploaded picture.');return;}
       again();};
@@ -988,8 +988,8 @@ function admin(view){
     if(!/^image\//.test(f.type)){amsg('Choose a picture file for the poster.');return;}
     var fr=new FileReader();
     fr.onload=function(){var im=new Image();im.onload=function(){
-      var w=Math.min(600,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth),cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(im,0,0,w,h);
-      a.poster=cv.toDataURL('image/jpeg',0.85);commit();};
+      var w=Math.min(1200,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth),cv=document.createElement('canvas'),cx;cv.width=w;cv.height=h;cx=cv.getContext('2d');cx.imageSmoothingQuality='high';cx.drawImage(im,0,0,w,h);
+      a.poster=cv.toDataURL('image/jpeg',0.92);commit();};
       im.onerror=function(){amsg('That file could not be read as a picture.');};im.src=fr.result;};
     fr.readAsDataURL(f);};
   if($('ss'))$('ss').onclick=function(){
