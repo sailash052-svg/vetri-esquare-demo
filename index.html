@@ -561,7 +561,7 @@ function home(){
   SNACKS.forEach(function(g,k){h+='<button type="button" role="tab" class="tab2'+(k===0?' on':'')+'" data-tab="'+k+'">'+g.c+'</button>';});
   h+='</div>';
   SNACKS.forEach(function(g,k){h+='<div class="pnl" data-pnl="'+k+'"'+(k===0?'':' hidden')+'>';g.items.forEach(function(x){h+='<div class="it">'+snIcon(x.ic)+'<span>'+x.n+'</span><b>'+inr(x.p)+'</b><div class="stp"><button type="button" data-id="'+x.id+'" data-d="-1" aria-label="Remove one '+x.n+'">&minus;</button><span id="q-'+x.id+'">0</span><button type="button" data-id="'+x.id+'" data-d="1" aria-label="Add one '+x.n+'">+</button></div></div>';});h+='</div>';});
-  h+='</div><div class="how" id="snkOrder"><div class="k">Your order</div><div id="snkLines" class="muted" style="font-size:14px">Nothing added yet.</div><div class="line" style="font-weight:700;border-top:1px solid #EBEBEB;margin-top:8px"><span>Total</span><span id="snkTot">&#8377;0</span></div><div class="fl2"><label for="snkScr">Screen</label><select id="snkScr"><option value="">Choose screen</option><option>EPIQ 1</option><option>EPIQ 2</option><option>COSMIQ</option></select></div><div class="fl2"><label for="snkSeat">Seat</label><input id="snkSeat" placeholder="For example H8" maxlength="3" autocomplete="off"></div><button type="button" class="btn" id="snkGo" style="margin-top:12px">Place snack order</button><div id="snkMsg" style="font-size:14px;margin-top:10px"></div><p class="muted" style="font-size:13px;margin:10px 0 0">Demo only: no real order is sent and no money is charged. In the real site, staff would see the order on their screen.</p></div></div></div><div class="sec" id="s-visit"><h2>Visit us</h2><div class="vis"><div><div class="k">Address</div>Vetri E-Square<br>Vallam Quarry Road<br>Thanjavur</div><div><div class="k">Box office</div>Open daily, 8:00 AM to 10:00 PM<br><a href="tel:+919003490822">9003490822</a><br><a href="mailto:sailash052@gmail.com">sailash052@gmail.com</a></div></div></div>';
+  h+='</div><div class="how" id="snkOrder"><div class="k">Your order</div><div id="snkLines" class="muted" style="font-size:14px">Nothing added yet.</div><div class="line" style="font-weight:700;border-top:1px solid #EBEBEB;margin-top:8px"><span>Total</span><span id="snkTot">&#8377;0</span></div><div class="fl2"><label for="snkScr">Screen</label><select id="snkScr"><option value="">Choose screen</option><option>EPIQ 1</option><option>EPIQ 2</option><option>COSMIQ</option></select></div><div class="fl2"><label for="snkSeat">Seat</label><input id="snkSeat" placeholder="For example H8" maxlength="3" autocomplete="off"></div><button type="button" class="btn" id="snkGo" style="margin-top:12px">Continue to payment</button><div id="snkMsg" style="font-size:14px;margin-top:10px"></div><p class="muted" style="font-size:13px;margin:10px 0 0">You pay on the next page with the same demo payment as tickets. No real money is charged. In the real site, staff would see the order on their screen.</p></div></div></div><div class="sec" id="s-visit"><h2>Visit us</h2><div class="vis"><div><div class="k">Address</div>Vetri E-Square<br>Vallam Quarry Road<br>Thanjavur</div><div><div class="k">Box office</div>Open daily, 8:00 AM to 10:00 PM<br><a href="tel:+919003490822">9003490822</a><br><a href="mailto:sailash052@gmail.com">sailash052@gmail.com</a></div></div></div>';
   app.innerHTML=h;
   snkInit();
   quoteInit();
@@ -574,6 +574,7 @@ var SN_ALL=[],sq={};
 SNACKS.forEach(function(g){g.items=g.items.map(function(x,i){var o={n:x[0],p:x[1],ic:x[2],id:'s'+SN_ALL.length};SN_ALL.push(o);return o;});});
 function orders(){try{return JSON.parse(localStorage.getItem('ves_orders')||'[]');}catch(e){return [];}}
 function saveOrders(o){try{localStorage.setItem('ves_orders',JSON.stringify(o));}catch(e){}}
+var snkPend=null;
 function snkUpdate(){
   var lines=[],tot=0;
   SN_ALL.forEach(function(x){var q=sq[x.id]||0,el=$('q-'+x.id);if(el)el.textContent=q;if(q){lines.push(q+' &times; '+x.n+' <span style="float:right">'+inr(q*x.p)+'</span>');tot+=q*x.p;}});
@@ -596,10 +597,7 @@ function snkInit(){
     if(!scr){msg.textContent='Choose your screen.';return;}
     var m=/^([A-L])(\d{1,2})$/.exec(seat);
     if(!m||+m[2]<1||+m[2]>26){msg.textContent='Enter your seat like H8 (rows A to L, seats 1 to 26).';return;}
-    var id='SN'+Math.floor(1000+Math.random()*9000),o=orders();
-    o.push({id:id,screen:scr,seat:seat,items:items,total:tot,time:new Date().toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}),done:false});
-    saveOrders(o);sq={};snkUpdate();
-    msg.style.color='#1F8A5B';msg.textContent='Order '+id+' placed. Staff will bring it to '+scr+', seat '+seat+'.';
+    snkPend={screen:scr,seat:seat,items:items,total:tot,id:null};go('#/snackpay');
   };
   snkUpdate();
 }
@@ -1006,6 +1004,25 @@ function admin(view){
     box.style.background='#E3F6E8';box.style.border='1px solid #2E9E4F';box.textContent='Saved. The website now uses these prices and this booking window.';
   };
 }
+function snackPay(){
+  var o=snkPend;if(!o||!o.items.length){go('#/');return;}
+  var h='<div class="bk" style="padding-top:16px"><div class="pay">Complete payment to send your snack order. (Demo)</div><div class="card"><div class="D" style="font-weight:900;font-size:26px">SNACK ORDER</div><div class="sub">'+o.screen+', seat '+o.seat+'</div>';
+  o.items.forEach(function(x){h+='<div class="line"><span>'+x.q+' &times; '+x.n+'</span><span>'+inr(x.q*x.p)+'</span></div>';});
+  h+='<div class="line grand"><span>TOTAL</span><span>'+inr(o.total)+'</span></div><button class="btn" id="sb" style="margin-top:14px">PAY (DEMO, NO MONEY)</button><button class="out" id="sf">Simulate a failed payment</button><button class="out" id="sk" style="border-color:#717171;color:#222222">Back to snacks</button></div></div>';
+  app.innerHTML=h;
+  $('sb').onclick=function(){var id='SN'+Math.floor(1000+Math.random()*9000),l=orders();l.push({id:id,screen:o.screen,seat:o.seat,items:o.items,total:o.total,paid:true,time:new Date().toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}),done:false});saveOrders(l);o.id=id;go('#/snackok');};
+  $('sf').onclick=function(){go('#/snackfail');};
+  $('sk').onclick=function(){go('#/snacks');};
+}
+function snackOk(){
+  var o=snkPend;if(!o||!o.id){go('#/');return;}
+  app.innerHTML='<div class="bk" style="text-align:center;padding-top:40px"><div class="D" style="font-weight:900;font-size:40px;color:#1F8A5B">PAYMENT DONE</div><p class="muted" style="line-height:1.6;max-width:420px;margin:12px auto">Order <b>'+o.id+'</b> is placed. Staff will bring it to <b>'+o.screen+'</b>, seat <b>'+o.seat+'</b>. Paid '+inr(o.total)+'.</p><p class="muted" style="font-size:13px">Demo only: no real money was charged and no real order was sent.</p><button class="btn" style="max-width:320px" id="sh">&larr; Back to home</button></div>';
+  $('sh').onclick=function(){snkPend=null;go('#/');};
+}
+function snackFail(){
+  app.innerHTML='<div class="bk" style="text-align:center;padding-top:40px"><div class="D" style="font-weight:900;font-size:44px;color:#FF5A4E">PAYMENT FAILED</div><p class="muted" style="line-height:1.6;max-width:420px;margin:12px auto">This was a simulated failure. Your snack order was not placed.</p><button class="btn" style="max-width:320px" id="sg">TRY AGAIN</button></div>';
+  $('sg').onclick=function(){go(snkPend?'#/snackpay':'#/snacks');};
+}
 function route(){
   var p=(location.hash||'#/').replace(/^#\/?/,'').split('/');
   var r=p[0]||'home';
@@ -1013,7 +1030,7 @@ function route(){
   if(r==='now'){moviesPage();window.scrollTo(0,0);return;}
   if(r==='screens'||r==='visit'||r==='snacks'){if(!$('s-screens'))home();var id={screens:'s-screens',visit:'s-visit',snacks:'s-snacks'}[r];var el=$(id);if(el)el.scrollIntoView();try{history.replaceState(null,'',location.pathname+location.search+'#/');}catch(e){}return;}
   window.scrollTo(0,0);
-  ({home:home,movies:moviesPage,movie:function(){movieDetail(+p[1],p[2]);},t:function(){ticketView(p[1]);},soon:function(){soonDetail(+p[1]);},book:seats,view:function(){view(p[1],p[2]);},pay:pay,ticket:ticket,failed:failed,admin:function(){if(staffIn())admin();else adminLogin();}}[r]||home)();
+  ({home:home,movies:moviesPage,movie:function(){movieDetail(+p[1],p[2]);},t:function(){ticketView(p[1]);},soon:function(){soonDetail(+p[1]);},book:seats,view:function(){view(p[1],p[2]);},pay:pay,snackpay:snackPay,snackok:snackOk,snackfail:snackFail,ticket:ticket,failed:failed,admin:function(){if(staffIn())admin();else adminLogin();}}[r]||home)();
 }
 try{history.scrollRestoration='manual';}catch(e){}
 window.addEventListener('hashchange',route);route();
